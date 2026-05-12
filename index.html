@@ -64,7 +64,7 @@ body{font-family:'Cormorant Garamond',Georgia,serif;background:var(--cream);colo
 <div id="auth-overlay">
     <div class="auth-box">
         <h3 style="margin-bottom:1rem; color:var(--green)">Contributor Login</h3>
-        <input type="text" id="auth-user" placeholder="Username (e.g. admin or Urdu)">
+        <input type="text" id="auth-user" placeholder="Username (admin or Language)">
         <input type="password" id="auth-pass" placeholder="Password">
         <button class="save-btn" style="width:100%" onclick="login()">Login</button>
         <button class="btn-browse" style="width:100%; margin-top:0.5rem" onclick="closeAuth()">Cancel</button>
@@ -115,7 +115,6 @@ body{font-family:'Cormorant Garamond',Georgia,serif;background:var(--cream);colo
 </div>
 
 <script>
-/* 🔑 AUTH & STORAGE */
 const ADMIN_PASS = "Nael2026";
 let currentUser = null, pendingAction = null, curType = '', currentLangCode = '';
 const load = () => JSON.parse(localStorage.getItem('ib_v3')) || {verdicts:[],audio:[],text:[]};
@@ -123,36 +122,16 @@ const save = (d) => localStorage.setItem('ib_v3', JSON.stringify(d));
 
 const LANGS = [
   {code:'af',name:'Afrikaans',native:'Afrikaans',rtl:false},
-  {code:'sq',name:'Albanian',native:'Shqip',rtl:false},
   {code:'am',name:'Amharic',native:'አማርኛ',rtl:false},
   {code:'ar',name:'Arabic',native:'العربية',rtl:true},
   {code:'bn',name:'Bengali',native:'বাংলা',rtl:false},
-  {code:'bs',name:'Bosnian',native:'Bosanski',rtl:false},
-  {code:'zh',name:'Chinese',native:'中文',rtl:false},
-  {code:'nl',name:'Dutch',native:'Nederlands',rtl:false},
   {code:'en',name:'English',native:'English',rtl:false},
   {code:'fr',name:'French',native:'Français',rtl:false},
-  {code:'de',name:'German',native:'Deutsch',rtl:false},
-  {code:'ha',name:'Hausa',native:'Hausa',rtl:false},
-  {code:'hi',name:'Hindi',native:'हिन्दी',rtl:false},
-  {code:'id',name:'Indonesian',native:'Bahasa Indonesia',rtl:false},
-  {code:'it',name:'Italian',native:'Italiano',rtl:false},
-  {code:'ja',name:'Japanese',native:'日本語',rtl:false},
   {code:'ms',name:'Malay',native:'Bahasa Melayu',rtl:false},
-  {code:'ps',name:'Pashto',native:'پښتو',rtl:true},
-  {code:'fa',name:'Persian',native:'فارسی',rtl:true},
-  {code:'pt',name:'Portuguese',native:'Português',rtl:false},
-  {code:'ru',name:'Russian',native:'Русский',rtl:false},
   {code:'so',name:'Somali',native:'Soomaali',rtl:false},
-  {code:'es',name:'Spanish',native:'Español',rtl:false},
   {code:'sw',name:'Swahili',native:'Kiswahili',rtl:false},
-  {code:'ta',name:'Tamil',native:'தமிழ்',rtl:false},
   {code:'ti',name:'Tigrinya',native:'ትግርኛ',rtl:false},
-  {code:'tr',name:'Turkish',native:'Türkçe',rtl:false},
-  {code:'ur',name:'Urdu',native:'اردو',rtl:true},
-  {code:'uz',name:'Uzbek',native:'Oʻzbekcha',rtl:false},
-  {code:'yo',name:'Yoruba',native:'Yorùbá',rtl:false},
-  {code:'zu',name:'Zulu',native:'isiZulu',rtl:false}
+  {code:'ur',name:'Urdu',native:'اردو',rtl:true}
 ];
 
 function login() {
@@ -163,13 +142,9 @@ function login() {
     } else alert("Incorrect credentials.");
 }
 
-function openAuthModal(requiredUser, action) { 
-    if (currentUser === 'admin' || currentUser === requiredUser) { 
-        action(); 
-    } else { 
-        pendingAction = action; 
-        document.getElementById('auth-overlay').classList.add('open'); 
-    } 
+function openAuthModal(requiredRole, action) { 
+    if (currentUser === 'admin' || currentUser === requiredRole) { action(); }
+    else { pendingAction = action; document.getElementById('auth-overlay').classList.add('open'); }
 }
 
 function closeAuth() { document.getElementById('auth-overlay').classList.remove('open'); }
@@ -193,7 +168,7 @@ function renderList(type) {
     const listEl = document.getElementById('list-view');
     document.getElementById('single-view').style.display = 'none';
     listEl.style.display = 'block';
-    listEl.innerHTML = `<button class="btn-add-card" style="margin-bottom:1rem" onclick="openAuthModal('admin', () => openModal('${type}'))">+ Add New</button>`;
+    listEl.innerHTML = `<button class="btn-add-card" style="margin-bottom:1rem" onclick="openAuthModal('admin', () => openModal('${type}'))">+ Add New Entry</button>`;
     listEl.innerHTML += items.map(it => `<a href="#" class="entry-link" onclick="viewEntry('${type}','${it.id}')">${it.title}</a>`).join('');
 }
 
@@ -209,7 +184,6 @@ function viewByLanguage(langCode) {
     const d = load();
     const l = LANGS.find(lx => lx.code === currentLangCode);
     document.getElementById('inner-title').textContent = l ? l.native : 'Language';
-    
     const results = [];
     ['verdicts','audio','text'].forEach(type => {
         d[type].forEach(it => { 
@@ -218,25 +192,15 @@ function viewByLanguage(langCode) {
                 if(it.title === "Ruling on passing in front of someone while they are praying." && currentLangCode === 'ti') {
                     displayTitle = "ሕጊ ኣብ ቅድሚ ሓደ ሰብ ክሰግድ ከሎ ምሕላፍ";
                 } else {
-                    const rawText = it.translations[currentLangCode].text;
-                    displayTitle = rawText.split('\n')[0].substring(0, 80) + (rawText.length > 80 ? '...' : '');
+                    displayTitle = it.translations[currentLangCode].text.split('\n')[0].substring(0, 80);
                 }
                 results.push({...it, category: type, displayTitle: displayTitle}); 
             }
         });
     });
-    
     const listEl = document.getElementById('list-view');
     listEl.innerHTML = `<button onclick="renderLangList()" style="margin-bottom:1rem">← Back to Languages</button>`;
-    if(!results.length) {
-        listEl.innerHTML += `<p style='text-align:center; font-style:italic; margin-top:2rem'>No entries found in this language.</p>`;
-    }
-    
-    listEl.innerHTML += results.map(it => `
-        <a href="#" class="entry-link" onclick="viewEntry('${it.category}','${it.id}')">
-            [${it.category.toUpperCase()}] ${it.displayTitle}
-        </a>
-    `).join('');
+    listEl.innerHTML += results.map(it => `<a href="#" class="entry-link" onclick="viewEntry('${it.category}','${it.id}')">[${it.category.toUpperCase()}] ${it.displayTitle}</a>`).join('');
 }
 
 function viewEntry(type, id) {
@@ -251,7 +215,6 @@ function viewEntry(type, id) {
 function buildCard(it, type) {
     let embed = it.url ? `<iframe width="100%" height="315" src="${it.url.replace('watch?v=','embed/')}" frameborder="0" allowfullscreen style="margin-top:1rem; border-radius:4px"></iframe>` : '';
     let tabs = '', panes = '';
-    
     Object.keys(it.translations).forEach((code, i) => {
         const tr = it.translations[code], l = LANGS.find(lx => lx.code === code) || {native:code};
         tabs += `<div class="lang-tab ${i===0?'active':''}" onclick="swTab('${it.id}','${code}', event)">${l.native}</div>`;
@@ -260,13 +223,14 @@ function buildCard(it, type) {
             <button style="margin-top:1rem" onclick="openAuthModal('${l.name}', () => openTransModal('${type}','${it.id}','${code}'))">Edit Translation</button>
         </div>`;
     });
-
     return `
     <div class="benefit-card" id="card-${it.id}">
+        <button style="position:absolute; top:1rem; right:1rem;" onclick="openAuthModal('admin', () => delItem('${type}','${it.id}'))">🗑</button>
         <div class="card-main">
             <span class="source-highlight">— ${it.scholar || 'Source Unspecified'}</span>
             <div class="english-translation-box"><strong>English:</strong><br>${it.english || 'No original translation available.'}</div>
             <h4 style="margin-top:1rem">${it.title}</h4>
+            <button class="btn-browse" onclick="openAuthModal('admin', () => openModal('${type}', '${it.id}'))">Edit Main Entry</button>
             ${it.arabic?`<div class="arabic-text">${it.arabic}</div>`:''}
             ${embed}
         </div>
@@ -280,6 +244,12 @@ function buildCard(it, type) {
     </div>`;
 }
 
+function delItem(type, id) {
+    if(!confirm('Delete this entry permanently?')) return;
+    const d = load(); d[type] = d[type].filter(i => i.id !== id);
+    save(d); navigate(type);
+}
+
 function swTab(itemId, code, ev) {
     const card = document.getElementById('card-'+itemId);
     card.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active'));
@@ -288,22 +258,26 @@ function swTab(itemId, code, ev) {
     document.getElementById(`lp-${itemId}-${code}`).classList.add('active');
 }
 
-function openModal(type) {
-    document.getElementById('modal-title').textContent = "Add " + (type === 'audio' ? 'Lecture Bit مقتطفات دروس' : type);
+function openModal(type, editId = null) {
+    const d = load();
+    const existing = editId ? d[type].find(i => i.id === editId) : null;
+    document.getElementById('modal-title').textContent = (existing ? "Edit " : "Add ") + (type === 'audio' ? 'Lecture Bit' : type);
     document.getElementById('modal-body').innerHTML = `
-        <div class="field"><label>Title (Internal Reference)</label><input type="text" id="f-title"></div>
-        <div class="field"><label>Scholar / Source</label><input type="text" id="f-scholar"></div>
-        <div class="field"><label>Source (Arabic)</label><textarea id="f-arabic" dir="rtl"></textarea></div>
-        ${type==='audio'?'<div class="field"><label>YouTube Link</label><input type="text" id="f-url"></div>':''}
-        <div class="field"><label>Original English Translation</label><textarea id="f-english"></textarea></div>
-        <button class="save-btn" onclick="saveItem('${type}')">Save Entry</button>`;
+        <div class="field"><label>Title (Reference)</label><input type="text" id="f-title" value="${existing?existing.title:''}"></div>
+        <div class="field"><label>Scholar / Source</label><input type="text" id="f-scholar" value="${existing?existing.scholar:''}"></div>
+        <div class="field"><label>Source (Arabic)</label><textarea id="f-arabic" dir="rtl">${existing?existing.arabic:''}</textarea></div>
+        ${type==='audio'?'<div class="field"><label>YouTube Link</label><input type="text" id="f-url" value="'+(existing?existing.url:'')+'"></div>':''}
+        <div class="field"><label>Original English Translation</label><textarea id="f-english">${existing?existing.english:''}</textarea></div>
+        <button class="save-btn" onclick="saveItem('${type}', '${editId||''}')">Save Entry</button>`;
     document.getElementById('modal-overlay').classList.add('open');
 }
 
-function saveItem(type) {
+function saveItem(type, editId) {
     const d = load();
-    const it = {id:Date.now().toString(36), title:document.getElementById('f-title').value, scholar:document.getElementById('f-scholar').value, arabic:document.getElementById('f-arabic').value, english:document.getElementById('f-english').value, url:document.getElementById('f-url')?.value||'', translations:{}};
-    d[type].unshift(it); save(d); closeModal(); navigate(type);
+    const it = {id: editId || Date.now().toString(36), title:document.getElementById('f-title').value, scholar:document.getElementById('f-scholar').value, arabic:document.getElementById('f-arabic').value, english:document.getElementById('f-english').value, url:document.getElementById('f-url')?.value||'', translations: editId ? d[type].find(i => i.id === editId).translations : {} };
+    if(editId) d[type] = d[type].map(i => i.id === editId ? it : i);
+    else d[type].unshift(it);
+    save(d); closeModal(); navigate(type);
 }
 
 function openTransModal(type, id, code) {
@@ -318,7 +292,6 @@ function openTransModal(type, id, code) {
 function saveTrans(type, id, code) {
     const d = load(), it = d[type].find(i => i.id === id);
     const finalCode = code || document.getElementById('f-lang').value;
-    const l = LANGS.find(lx => lx.code === finalCode);
     it.translations[finalCode] = {text: document.getElementById('f-ttext').value};
     save(d); closeModal(); viewEntry(type, id);
 }
