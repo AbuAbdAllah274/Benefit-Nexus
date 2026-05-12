@@ -68,6 +68,8 @@ body{font-family:'Cormorant Garamond',Georgia,serif;background:var(--cream);colo
 /* CARDS & TRANS */
 .benefit-card{background:var(--parchment);border:1px solid var(--border);border-radius:4px;position:relative;margin-top:1rem}
 .card-main{padding:1.6rem 2rem 1.3rem}
+.source-highlight { color: var(--gold); font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; font-style: italic; display: block; border-left: 3px solid var(--gold); padding-left: 10px; }
+.english-summary { font-size: 1rem; color: var(--ink); line-height: 1.6; margin-bottom: 1.5rem; }
 .arabic-text{font-family:'Noto Naskh Arabic',serif;font-size:1.2rem;line-height:2;text-align:right;direction:rtl;margin-top:1rem;border-top:1px solid var(--border);padding-top:1rem}
 .trans-panel{border-top: 1px solid var(--border);}
 .trans-header{display:flex;align-items:center;gap:.8rem;padding:.5rem 1rem;background:rgba(27,58,46,.05)}
@@ -109,7 +111,6 @@ body{font-family:'Cormorant Garamond',Georgia,serif;background:var(--cream);colo
       <div class="card-title">Text Benefits 📜</div>
       <div class="card-footer"><span id="cnt-text">0</span> <button class="btn-browse" onclick="navigate('text')">Browse</button></div>
     </div>
-    <!-- NEW LANGUAGE BROWSE CARD -->
     <div class="home-card" style="border: 1px solid var(--gold)">
       <div class="card-title">Browse by Language 🌍</div>
       <div class="card-footer"><span>Search</span> <button class="btn-browse" onclick="navigate('languages')">Enter</button></div>
@@ -168,7 +169,7 @@ function navigate(type) {
     curType = type;
     document.getElementById('home').classList.remove('active');
     document.getElementById('inner-container').classList.add('active');
-    document.getElementById('inner-title').textContent = type === 'languages' ? 'Browse by Language' : type;
+    document.getElementById('inner-title').textContent = type === 'languages' ? 'Browse by Language' : (type === 'audio' ? 'Lecture Bits' : type);
     type === 'languages' ? renderLangList() : renderList(type);
 }
 
@@ -192,7 +193,7 @@ function renderLangList() {
     const listEl = document.getElementById('list-view');
     document.getElementById('single-view').style.display = 'none';
     listEl.style.display = 'block';
-    listEl.innerHTML = LANGS.map(l => `<a href="#" class="entry-link" onclick="viewByLanguage('${l.code}')">${l.native} (${l.name})</a>`).join('');
+    listEl.innerHTML = LANGS.map(l => `<a href="#" class="entry-link" onclick="viewByLanguage('${l.code}')">${l.native}</a>`).join('');
 }
 
 function viewByLanguage(langCode) {
@@ -227,8 +228,23 @@ function buildCard(it, type) {
             <button style="margin-top:1rem" onclick="openAuthModal('${l.name}', () => openTransModal('${type}','${it.id}','${code}'))">Edit Translation</button>
         </div>`;
     });
-    return `<div class="benefit-card" id="card-${it.id}"><div class="card-main"><h4>${it.title}</h4><p>${it.body}</p>${it.arabic?`<div class="arabic-text">${it.arabic}</div>`:''}${embed}</div>
-    <div class="trans-panel"><div class="trans-header"><div class="lang-tabs">${tabs}</div><button onclick="openAuthModal(null, () => openTransModal('${type}','${it.id}',null))">+ Add Translation</button></div>${panes}</div></div>`;
+    return `
+    <div class="benefit-card" id="card-${it.id}">
+        <div class="card-main">
+            <span class="source-highlight">— ${it.scholar || 'Source Unspecified'}</span>
+            <div class="english-summary">${it.body || 'English summary unavailable.'}</div>
+            <h4 style="margin-top:1rem">${it.title}</h4>
+            ${it.arabic?`<div class="arabic-text">${it.arabic}</div>`:''}
+            ${embed}
+        </div>
+        <div class="trans-panel">
+            <div class="trans-header">
+                <div class="lang-tabs">${tabs}</div>
+                <button onclick="openAuthModal(null, () => openTransModal('${type}','${it.id}',null))">+ Add Translation</button>
+            </div>
+            ${panes || '<div style="padding:1rem">No translations yet.</div>'}
+        </div>
+    </div>`;
 }
 
 function swTab(itemId, code, ev) {
@@ -241,11 +257,11 @@ function swTab(itemId, code, ev) {
 
 /* MODAL LOGIC */
 function openModal(type) {
-    document.getElementById('modal-title').textContent = "Add " + type;
+    document.getElementById('modal-title').textContent = "Add " + (type === 'audio' ? 'Lecture Bit' : type);
     document.getElementById('modal-body').innerHTML = `
         <div class="field"><label>Title</label><input type="text" id="f-title"></div>
-        <div class="field"><label>Scholar</label><input type="text" id="f-scholar"></div>
-        <div class="field"><label>Arabic/Source</label><textarea id="f-arabic" dir="rtl"></textarea></div>
+        <div class="field"><label>Scholar / Source</label><input type="text" id="f-scholar"></div>
+        <div class="field"><label>Arabic/Source Text</label><textarea id="f-arabic" dir="rtl"></textarea></div>
         ${type==='audio'?'<div class="field"><label>YouTube Link</label><input type="text" id="f-url"></div>':''}
         <div class="field"><label>English Summary</label><textarea id="f-body"></textarea></div>
         <button class="save-btn" onclick="saveItem('${type}')">Save Entry</button>`;
@@ -263,7 +279,7 @@ function openTransModal(type, id, code) {
     document.getElementById('modal-body').innerHTML = `
         <div class="field"><label>Language</label>${code?code:`<select id="f-lang">${LANGS.map(l=>`<option value="${l.code}">${l.name}</option>`).join('')}</select>`}</div>
         <div class="field"><label>Translation</label><textarea id="f-ttext" style="height:150px">${ex?ex.text:''}</textarea></div>
-        <button class="save-btn" onclick="saveTrans('${type}','${id}','${code}')">Save Translation</button>`;
+        <button class="save-btn" onclick="saveTrans('${type}','var id}','${code}')">Save Translation</button>`;
     document.getElementById('modal-overlay').classList.add('open');
 }
 
