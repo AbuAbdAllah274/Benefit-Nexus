@@ -163,7 +163,6 @@ function login() {
     } else alert("Incorrect credentials.");
 }
 
-// RESTORED: Authentication check that prompts for password
 function openAuthModal(requiredUser, action) { 
     if (currentUser === 'admin' || currentUser === requiredUser) { 
         action(); 
@@ -253,7 +252,6 @@ function buildCard(it, type) {
     let embed = it.url ? `<iframe width="100%" height="315" src="${it.url.replace('watch?v=','embed/')}" frameborder="0" allowfullscreen style="margin-top:1rem; border-radius:4px"></iframe>` : '';
     let tabs = '', panes = '';
     
-    // ENSURE: English translation is always persistent at the top of the pane
     Object.keys(it.translations).forEach((code, i) => {
         const tr = it.translations[code], l = LANGS.find(lx => lx.code === code) || {native:code};
         tabs += `<div class="lang-tab ${i===0?'active':''}" onclick="swTab('${it.id}','${code}', event)">${l.native}</div>`;
@@ -267,7 +265,6 @@ function buildCard(it, type) {
     <div class="benefit-card" id="card-${it.id}">
         <div class="card-main">
             <span class="source-highlight">— ${it.scholar || 'Source Unspecified'}</span>
-            <!-- Persistent English Translation Area -->
             <div class="english-translation-box"><strong>English:</strong><br>${it.english || 'No original translation available.'}</div>
             <h4 style="margin-top:1rem">${it.title}</h4>
             ${it.arabic?`<div class="arabic-text">${it.arabic}</div>`:''}
@@ -276,7 +273,6 @@ function buildCard(it, type) {
         <div class="trans-panel">
             <div class="trans-header">
                 <div class="lang-tabs">${tabs}</div>
-                <!-- RESTORED: Auth check for adding translation -->
                 <button onclick="openAuthModal(null, () => openTransModal('${type}','${it.id}',null))">+ Add Translation</button>
             </div>
             ${panes || '<div style="padding:1rem">No additional translations yet.</div>'}
@@ -322,6 +318,7 @@ function openTransModal(type, id, code) {
 function saveTrans(type, id, code) {
     const d = load(), it = d[type].find(i => i.id === id);
     const finalCode = code || document.getElementById('f-lang').value;
+    const l = LANGS.find(lx => lx.code === finalCode);
     it.translations[finalCode] = {text: document.getElementById('f-ttext').value};
     save(d); closeModal(); viewEntry(type, id);
 }
