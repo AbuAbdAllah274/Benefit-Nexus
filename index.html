@@ -198,14 +198,28 @@ function renderLangList() {
 
 function viewByLanguage(langCode) {
     const d = load();
+    const l = LANGS.find(lx => lx.code === langCode);
+    document.getElementById('inner-title').textContent = l ? l.native : 'Language';
+    
     const results = [];
     ['verdicts','audio','text'].forEach(type => {
-        d[type].forEach(it => { if(it.translations[langCode]) results.push({...it, category: type}); });
+        d[type].forEach(it => { 
+            if(it.translations[langCode]) {
+                // If a translation exists, we use that text as the title for the link
+                results.push({...it, category: type, displayTitle: it.translations[langCode].text}); 
+            }
+        });
     });
+    
     const listEl = document.getElementById('list-view');
     listEl.innerHTML = `<button onclick="renderLangList()" style="margin-bottom:1rem">← Back to Languages</button>`;
     if(!results.length) listEl.innerHTML += `<p>No entries found for this language.</p>`;
-    listEl.innerHTML += results.map(it => `<a href="#" class="entry-link" onclick="viewEntry('${it.category}','${it.id}')">[${it.category.toUpperCase()}] ${it.title}</a>`).join('');
+    
+    listEl.innerHTML += results.map(it => `
+        <a href="#" class="entry-link" onclick="viewEntry('${it.category}','${it.id}')">
+            [${it.category.toUpperCase()}] ${it.displayTitle}
+        </a>
+    `).join('');
 }
 
 function viewEntry(type, id) {
@@ -213,7 +227,14 @@ function viewEntry(type, id) {
     const view = document.getElementById('single-view');
     document.getElementById('list-view').style.display = 'none';
     view.style.display = 'block';
-    view.innerHTML = `<button onclick="${curType==='languages'?'viewByLanguage()':'renderList(curType)'}" style="margin-bottom:1rem">← Back</button>` + buildCard(it, type);
+    view.innerHTML = `<button onclick="${curType==='languages'?'viewByLanguage(\'' + getLangCodeFromTitle() + '\')':'renderList(curType)'}" style="margin-bottom:1rem">← Back</button>` + buildCard(it, type);
+}
+
+// Helper to remember which language we were browsing when clicking "Back" from a single entry
+function getLangCodeFromTitle() {
+    const currentTitle = document.getElementById('inner-title').textContent;
+    const l = LANGS.find(lx => lx.native === currentTitle);
+    return l ? l.code : '';
 }
 
 /* UI COMPONENTS */
@@ -279,7 +300,7 @@ function openTransModal(type, id, code) {
     document.getElementById('modal-body').innerHTML = `
         <div class="field"><label>Language</label>${code?code:`<select id="f-lang">${LANGS.map(l=>`<option value="${l.code}">${l.name}</option>`).join('')}</select>`}</div>
         <div class="field"><label>Translation</label><textarea id="f-ttext" style="height:150px">${ex?ex.text:''}</textarea></div>
-        <button class="save-btn" onclick="saveTrans('${type}','var id}','${code}')">Save Translation</button>`;
+        <button class="save-btn" onclick="saveTrans('${type}','${id}','${code}')">Save Translation</button>`;
     document.getElementById('modal-overlay').classList.add('open');
 }
 
