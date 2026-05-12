@@ -230,6 +230,7 @@ function buildCard(it, type) {
             <span class="source-highlight">— ${it.scholar || 'Source Unspecified'}</span>
             <div class="english-translation-box"><strong>English:</strong><br>${it.english || 'No original translation available.'}</div>
             <h4 style="margin-top:1rem">${it.title}</h4>
+            <!-- FIX: Admin can always edit these fields -->
             <button class="btn-browse" onclick="openAuthModal('admin', () => openModal('${type}', '${it.id}'))">Edit Main Entry</button>
             ${it.arabic?`<div class="arabic-text">${it.arabic}</div>`:''}
             ${embed}
@@ -274,7 +275,16 @@ function openModal(type, editId = null) {
 
 function saveItem(type, editId) {
     const d = load();
-    const it = {id: editId || Date.now().toString(36), title:document.getElementById('f-title').value, scholar:document.getElementById('f-scholar').value, arabic:document.getElementById('f-arabic').value, english:document.getElementById('f-english').value, url:document.getElementById('f-url')?.value||'', translations: editId ? d[type].find(i => i.id === editId).translations : {} };
+    const oldItem = editId ? d[type].find(i => i.id === editId) : null;
+    const it = {
+        id: editId || Date.now().toString(36), 
+        title:document.getElementById('f-title').value, 
+        scholar:document.getElementById('f-scholar').value, 
+        arabic:document.getElementById('f-arabic').value, 
+        english:document.getElementById('f-english').value, 
+        url:document.getElementById('f-url')?.value||'', 
+        translations: oldItem ? oldItem.translations : {} 
+    };
     if(editId) d[type] = d[type].map(i => i.id === editId ? it : i);
     else d[type].unshift(it);
     save(d); closeModal(); navigate(type);
