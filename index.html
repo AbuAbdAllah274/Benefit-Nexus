@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Naskh+Arabic:wght@400;500;700&family=Noto+Sans:wght@400;500&family=Noto+Sans+Bengali:wght@400;500&family=Noto+Sans+Devanagari:wght@400;500&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
 <style>
-/* Existing CSS remains exactly the same to preserve the look */
 :root {
   --ink:#1a1209; --parchment:#f5eed8; --cream:#faf6ec;
   --gold:#b8860b; --gold-lt:#d4a843; --gold-pale:#f0e0a0;
@@ -16,27 +15,41 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Cormorant Garamond',Georgia,serif;background:var(--cream);color:var(--ink);min-height:100vh;overflow-x:hidden}
+
 .page{display:none;position:relative;z-index:1;min-height:100vh}
 .page.active{display:block}
+
 #home{display:none;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1.5rem;text-align:center}
 #home.active{display:flex}
 .site-title{font-family:'Amiri',serif;font-size:clamp(3rem,9vw,5.5rem);font-weight:700;color:var(--green);line-height:1;margin-top:1.2rem}
 .site-title-ar{font-family:'Noto Naskh Arabic',serif;font-size:clamp(2rem,6vw,4rem);color:var(--gold);display:block;margin-top:.3rem}
 .divider{width:160px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:2rem auto}
+
 .home-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;max-width:1000px;width:100%;margin-top:.5rem}
 .home-card{background:var(--parchment);border:1px solid var(--border);border-radius:6px;padding:1.5rem;box-shadow:0 2px 12px var(--shadow);transition:transform 0.3s}
 .home-card:hover{transform:translateY(-4px)}
 .card-title{font-size:1.3rem;font-weight:600;color:var(--green)}
 .card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:1.3rem}
+
 .btn-browse, .btn-add-card, .save-btn{font-family:'Cormorant Garamond',serif;padding:.4rem 1rem;cursor:pointer;border-radius:3px;transition:0.2s}
 .btn-browse{background:none;border:1px solid var(--green);color:var(--green)}
 .btn-add-card, .save-btn{background:var(--green);border:none;color:var(--gold-pale)}
-.entry-link { display: block; background: var(--parchment); padding: 1.2rem; margin-bottom: 0.8rem; border: 1px solid var(--border); border-radius: 4px; text-decoration: none; color: var(--green); transition: 0.2s;}
+
+.entry-link {
+    display: block; background: var(--parchment); padding: 1.2rem; margin-bottom: 0.8rem;
+    border: 1px solid var(--border); border-radius: 4px; text-decoration: none;
+    color: var(--green); transition: 0.2s;
+}
 .entry-link:hover { border-color: var(--gold); transform: translateX(5px); }
-#auth-overlay { display: none; position: fixed; inset: 0; background: rgba(26,18,9,0.85); z-index: 1000; align-items: center; justify-content: center; }
+
+#auth-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(26,18,9,0.85);
+    z-index: 1000; align-items: center; justify-content: center;
+}
 #auth-overlay.open { display: flex; }
 .auth-box { background: var(--parchment); padding: 2rem; border-radius: 4px; width: 320px; border: 1px solid var(--gold); }
 .auth-box input { width: 100%; padding: 0.8rem; margin: 0.5rem 0; border: 1px solid var(--border); }
+
 .inner-page{max-width:920px;margin:0 auto;padding:2rem 1.5rem 5rem}
 .page-header{padding:2.5rem 0 1.8rem;text-align:center;position:relative}
 .back-btn{position:absolute;top:2.5rem;left:0;background:none;border:1px solid var(--border);padding:.4rem 1rem;cursor:pointer}
@@ -46,6 +59,7 @@ body{font-family:'Cormorant Garamond',Georgia,serif;background:var(--cream);colo
 .field{margin-bottom:1rem}
 .field label{display:block;font-size:.76rem;text-transform:uppercase;margin-bottom:.3rem}
 .field input, .field textarea, .field select{width:100%;background:var(--parchment);border:1px solid var(--border);padding:.55rem .85rem}
+
 .benefit-card{background:var(--parchment);border:1px solid var(--border);border-radius:4px;position:relative;margin-top:1rem}
 .card-main{padding:1.6rem 2rem 1.3rem}
 .source-highlight { color: var(--gold); font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; font-style: italic; display: block; border-left: 3px solid var(--gold); padding-left: 10px; }
@@ -65,7 +79,7 @@ body{font-family:'Cormorant Garamond',Georgia,serif;background:var(--cream);colo
 <div id="auth-overlay">
     <div class="auth-box">
         <h3 style="margin-bottom:1rem; color:var(--green)">Contributor Login</h3>
-        <input type="text" id="auth-user" placeholder="Username (e.g. admin or Urdu)">
+        <input type="text" id="auth-user" placeholder="Username">
         <input type="password" id="auth-pass" placeholder="Password">
         <button class="save-btn" style="width:100%" onclick="login()">Login</button>
         <button class="btn-browse" style="width:100%; margin-top:0.5rem" onclick="closeAuth()">Cancel</button>
@@ -116,7 +130,6 @@ body{font-family:'Cormorant Garamond',Georgia,serif;background:var(--cream);colo
 </div>
 
 <script>
-/* 🔑 AUTH & STORAGE */
 const ADMIN_PASS = "Nael2026";
 let currentUser = null, pendingAction = null, curType = '', currentLangCode = '';
 const load = () => JSON.parse(localStorage.getItem('ib_v3')) || {verdicts:[],audio:[],text:[]};
@@ -129,23 +142,6 @@ const LANGS = [
   {code:'ru',name:'Russian', native:'Русский', rtl:false},
   {code:'ms',name:'Malay', native:'Bahasa Melayu', rtl:false}
 ];
-
-/* 📖 TITLE TRANSLATION DICTIONARY */
-// This map ensures common titles are translated in the browse links even if a full translation isn't in the database yet.
-const TITLE_MAP = {
-  "Ruling on passing in front of someone while they are praying": {
-    "ti": "ሕጊ ኣብ ቅድሚ ሓደ ሰብ ክሰግድ ከሎ ምሕላፍ",
-    "ur": "نمازی کے سامنے سے گزرنے کا حکم",
-    "sw": "Hukumu ya kupita mbele ya mtu anayeswali"
-  }
-};
-
-function translateTitle(englishTitle, langCode) {
-    if (TITLE_MAP[englishTitle] && TITLE_MAP[englishTitle][langCode]) {
-        return TITLE_MAP[englishTitle][langCode];
-    }
-    return englishTitle; // Fallback to English if not in map
-}
 
 function login() {
     const user = document.getElementById('auth-user').value, pass = document.getElementById('auth-pass').value;
@@ -196,22 +192,26 @@ function viewByLanguage(langCode) {
     const results = [];
     ['verdicts','audio','text'].forEach(type => {
         d[type].forEach(it => { 
-            // We show the entry if the translation exists OR if we have a mapped translation for the title
-            let displayTitle = translateTitle(it.title, currentLangCode);
-            
-            // If the translation actually exists in the DB, take its first line as a priority
+            // CRITICAL: Only show if a translation exists for this language
             if(it.translations[currentLangCode]) {
-                const rawText = it.translations[currentLangCode].text;
-                displayTitle = rawText.split('\n')[0].substring(0, 100);
+                let displayTitle = "";
+                // Specific translation for the "Passing in front" verdict
+                if(it.title === "Ruling on passing in front of someone while they are praying." && currentLangCode === 'ti') {
+                    displayTitle = "ሕጊ ኣብ ቅድሚ ሓደ ሰብ ክሰግድ ከሎ ምሕላፍ";
+                } else {
+                    const rawText = it.translations[currentLangCode].text;
+                    displayTitle = rawText.split('\n')[0].substring(0, 80) + (rawText.length > 80 ? '...' : '');
+                }
+                results.push({...it, category: type, displayTitle: displayTitle}); 
             }
-            
-            results.push({...it, category: type, displayTitle: displayTitle});
         });
     });
     
     const listEl = document.getElementById('list-view');
     listEl.innerHTML = `<button onclick="renderLangList()" style="margin-bottom:1rem">← Back to Languages</button>`;
-    if(!results.length) listEl.innerHTML += `<p>No entries found.</p>`;
+    if(!results.length) {
+        listEl.innerHTML += `<p style='text-align:center; font-style:italic; margin-top:2rem'>No entries found in this language.</p>`;
+    }
     
     listEl.innerHTML += results.map(it => `
         <a href="#" class="entry-link" onclick="viewEntry('${it.category}','${it.id}')">
