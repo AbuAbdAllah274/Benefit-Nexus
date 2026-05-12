@@ -49,7 +49,7 @@ body{font-family:'Cormorant Garamond',Georgia,serif;background:var(--cream);colo
 .card-main{padding:1.6rem 2rem 1.3rem}
 .source-highlight { color: var(--gold); font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; font-style: italic; display: block; border-left: 3px solid var(--gold); padding-left: 10px; }
 .english-translation-box { font-size: 1.05rem; color: var(--ink); line-height: 1.7; margin-bottom: 1.5rem; padding: 1rem; background: rgba(184,134,11,0.05); border-radius: 4px; }
-.arabic-text{font-family:'Noto Naskh Arabic',serif;font-size:1.2rem;line-height:2;text-align:right;direction:rtl;margin-top:1rem;border-top:1px solid var(--border);padding-top:1rem}
+.arabic-text{font-family:'Noto Naskh Arabic',serif;font-size:1.3rem;line-height:2.2;text-align:right;direction:rtl;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
 .trans-panel{border-top: 1px solid var(--border);}
 .trans-header{display:flex;align-items:center;gap:.8rem;padding:.5rem 1rem;background:rgba(27,58,46,.05)}
 .lang-tab{padding:.2rem .6rem;cursor:pointer;border:1px solid var(--border);font-size:.8rem;border-radius:15px}
@@ -138,16 +138,24 @@ function login() {
     const user = document.getElementById('auth-user').value, pass = document.getElementById('auth-pass').value;
     if ((user === 'admin' && pass === ADMIN_PASS) || (pass === user + "1447")) {
         currentUser = user; document.getElementById('auth-overlay').classList.remove('open');
-        if (pendingAction) pendingAction();
+        if (pendingAction) {
+            const action = pendingAction;
+            pendingAction = null;
+            action();
+        }
     } else alert("Incorrect credentials.");
 }
 
 function openAuthModal(requiredRole, action) { 
-    if (currentUser === 'admin' || currentUser === requiredRole) { action(); }
-    else { pendingAction = action; document.getElementById('auth-overlay').classList.add('open'); }
+    if (currentUser === 'admin' || (requiredRole !== 'admin' && currentUser === requiredRole)) { 
+        action(); 
+    } else { 
+        pendingAction = action; 
+        document.getElementById('auth-overlay').classList.add('open'); 
+    }
 }
 
-function closeAuth() { document.getElementById('auth-overlay').classList.remove('open'); }
+function closeAuth() { document.getElementById('auth-overlay').classList.remove('open'); pendingAction = null; }
 
 function navigate(type) {
     curType = type;
@@ -216,7 +224,7 @@ function buildCard(it, type) {
     let embed = it.url ? `<iframe width="100%" height="315" src="${it.url.replace('watch?v=','embed/')}" frameborder="0" allowfullscreen style="margin-top:1rem; border-radius:4px"></iframe>` : '';
     let tabs = '', panes = '';
     Object.keys(it.translations).forEach((code, i) => {
-        const tr = it.translations[code], l = LANGS.find(lx => lx.code === code) || {native:code};
+        const tr = it.translations[code], l = LANGS.find(lx => lx.code === code) || {native:code, name: code};
         tabs += `<div class="lang-tab ${i===0?'active':''}" onclick="swTab('${it.id}','${code}', event)">${l.native}</div>`;
         panes += `<div class="lang-pane ${i===0?'active':''}" id="lp-${it.id}-${code}">
             <div class="trans-text ${l.rtl?'rtl':''}">${tr.text}</div>
@@ -228,16 +236,18 @@ function buildCard(it, type) {
         <button style="position:absolute; top:1rem; right:1rem;" onclick="openAuthModal('admin', () => delItem('${type}','${it.id}'))">🗑</button>
         <div class="card-main">
             <span class="source-highlight">— ${it.scholar || 'Source Unspecified'}</span>
-            <div class="english-translation-box"><strong>English:</strong><br>${it.english || 'No original translation available.'}</div>
-            <h4 style="margin-top:1rem">${it.title}</h4>
-            <!-- FIX: Admin can always edit these fields -->
-            <button class="btn-browse" onclick="openAuthModal('admin', () => openModal('${type}', '${it.id}'))">Edit Main Entry</button>
+            <!-- Source Arabic (FIRST) -->
             ${it.arabic?`<div class="arabic-text">${it.arabic}</div>`:''}
+            <!-- Original English -->
+            <div class="english-translation-box"><strong>Original English:</strong><br>${it.english || 'No original translation available.'}</div>
+            <h4 style="margin-top:1rem">${it.title}</h4>
+            <button class="btn-browse" onclick="openAuthModal('admin', () => openModal('${type}', '${it.id}'))">Edit Main Entry</button>
             ${embed}
         </div>
         <div class="trans-panel">
             <div class="trans-header">
                 <div class="lang-tabs">${tabs}</div>
+                <!-- Auth check for new translation -->
                 <button onclick="openAuthModal(null, () => openTransModal('${type}','${it.id}',null))">+ Add Translation</button>
             </div>
             ${panes || '<div style="padding:1rem">No additional translations yet.</div>'}
@@ -264,7 +274,7 @@ function openModal(type, editId = null) {
     const existing = editId ? d[type].find(i => i.id === editId) : null;
     document.getElementById('modal-title').textContent = (existing ? "Edit " : "Add ") + (type === 'audio' ? 'Lecture Bit' : type);
     document.getElementById('modal-body').innerHTML = `
-        <div class="field"><label>Title (Reference)</label><input type="text" id="f-title" value="${existing?existing.title:''}"></div>
+        <div class="field"><label>Title (Internal Ref)</label><input type="text" id="f-title" value="${existing?existing.title:''}"></div>
         <div class="field"><label>Scholar / Source</label><input type="text" id="f-scholar" value="${existing?existing.scholar:''}"></div>
         <div class="field"><label>Source (Arabic)</label><textarea id="f-arabic" dir="rtl">${existing?existing.arabic:''}</textarea></div>
         ${type==='audio'?'<div class="field"><label>YouTube Link</label><input type="text" id="f-url" value="'+(existing?existing.url:'')+'"></div>':''}
