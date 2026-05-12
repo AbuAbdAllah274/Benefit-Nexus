@@ -14,9 +14,7 @@
   --rust:#8b3a1a; --border:rgba(184,134,11,.25); --shadow:rgba(26,18,9,.15);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
 body{font-family:'Cormorant Garamond',Georgia,serif;background:var(--cream);color:var(--ink);min-height:100vh;overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;background-image:repeating-linear-gradient(45deg,transparent,transparent 40px,rgba(184,134,11,.04) 40px,rgba(184,134,11,.04) 41px),repeating-linear-gradient(-45deg,transparent,transparent 40px,rgba(184,134,11,.04) 40px,rgba(184,134,11,.04) 41px);pointer-events:none;z-index:0}
 
 /* PAGES */
 .page{display:none;position:relative;z-index:1;min-height:100vh}
@@ -25,34 +23,27 @@ body::before{content:'';position:fixed;inset:0;background-image:repeating-linear
 /* HOME */
 #home{display:none;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1.5rem;text-align:center}
 #home.active{display:flex}
-.ornament{display:block;margin:0 auto;fill:var(--gold);opacity:.7}
 .site-title{font-family:'Amiri',serif;font-size:clamp(3rem,9vw,5.5rem);font-weight:700;color:var(--green);line-height:1;margin-top:1.2rem}
 .site-title-ar{font-family:'Noto Naskh Arabic',serif;font-size:clamp(2rem,6vw,4rem);color:var(--gold);display:block;margin-top:.3rem}
-.site-sub{font-style:italic;font-size:1.2rem;color:var(--green-mid);margin-top:.7rem;letter-spacing:.1em}
 .divider{width:160px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:2rem auto}
 
 /* HOME CARDS */
-.home-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1.8rem;max-width:860px;width:100%;margin-top:.5rem}
-.home-card{background:var(--parchment);border:1px solid var(--border);border-radius:6px;padding:2rem 1.8rem 1.5rem;box-shadow:0 2px 12px var(--shadow);position:relative;transition:transform .3s}
+.home-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;max-width:1000px;width:100%;margin-top:.5rem}
+.home-card{background:var(--parchment);border:1px solid var(--border);border-radius:6px;padding:1.5rem;box-shadow:0 2px 12px var(--shadow);transition:transform 0.3s}
 .home-card:hover{transform:translateY(-4px)}
-.card-icon{font-size:2.4rem;margin-bottom:.8rem;display:block}
-.card-title{font-size:1.5rem;font-weight:600;color:var(--green)}
-.card-title-ar{font-family:'Noto Naskh Arabic',serif;font-size:1.2rem;color:var(--gold);display:block;margin-top:.2rem}
-.card-desc{font-size:.9rem;color:#5a4a30;margin-top:.6rem;font-style:italic;line-height:1.6}
-.card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:1.3rem;gap:.5rem}
-.card-count{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--green-mid);border:1px solid var(--border);padding:.18rem .6rem;border-radius:2px}
-.btn-browse, .btn-add-card{font-family:'Cormorant Garamond',serif;font-size:.88rem;padding:.25rem .8rem;border-radius:3px;cursor:pointer;transition:all .15s}
+.card-title{font-size:1.3rem;font-weight:600;color:var(--green)}
+.card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:1.3rem}
+.btn-browse, .btn-add-card, .save-btn{font-family:'Cormorant Garamond',serif;padding:.4rem 1rem;cursor:pointer;border-radius:3px;transition:0.2s}
 .btn-browse{background:none;border:1px solid var(--green);color:var(--green)}
-.btn-browse:hover{background:var(--green);color:var(--gold-pale)}
-.btn-add-card{background:var(--green);border:1px solid var(--green);color:var(--gold-pale)}
+.btn-add-card, .save-btn{background:var(--green);border:none;color:var(--gold-pale)}
 
 /* LIST VIEW */
 .entry-link {
     display: block; background: var(--parchment); padding: 1.2rem; margin-bottom: 0.8rem;
     border: 1px solid var(--border); border-radius: 4px; text-decoration: none;
-    color: var(--green); font-size: 1.2rem; font-weight: 600; transition: 0.2s;
+    color: var(--green); transition: 0.2s;
 }
-.entry-link:hover { border-color: var(--gold); background: var(--cream); transform: translateX(5px); }
+.entry-link:hover { border-color: var(--gold); transform: translateX(5px); }
 
 /* AUTH OVERLAY */
 #auth-overlay {
@@ -63,29 +54,23 @@ body::before{content:'';position:fixed;inset:0;background-image:repeating-linear
 .auth-box { background: var(--parchment); padding: 2rem; border-radius: 4px; width: 320px; border: 1px solid var(--gold); }
 .auth-box input { width: 100%; padding: 0.8rem; margin: 0.5rem 0; border: 1px solid var(--border); }
 
-/* INNER PAGE UI & MODAL (Preserving your exact layout) */
+/* INNER PAGE UI */
 .inner-page{max-width:920px;margin:0 auto;padding:2rem 1.5rem 5rem}
 .page-header{padding:2.5rem 0 1.8rem;text-align:center;position:relative}
 .back-btn{position:absolute;top:2.5rem;left:0;background:none;border:1px solid var(--border);padding:.4rem 1rem;cursor:pointer}
-.toolbar{display:flex;align-items:center;gap:1rem;margin-bottom:1.8rem}
-.add-btn{background:var(--green);color:var(--gold-pale);padding:.6rem 1.4rem;cursor:pointer;border:none}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(26,18,9,.65);z-index:200;align-items:center;justify-content:center}
 .modal-overlay.open{display:flex}
 .modal{background:var(--cream);padding:2.2rem;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;position:relative}
 .field{margin-bottom:1rem}
 .field label{display:block;font-size:.76rem;text-transform:uppercase;margin-bottom:.3rem}
 .field input, .field textarea, .field select{width:100%;background:var(--parchment);border:1px solid var(--border);padding:.55rem .85rem}
-.save-btn{width:100%;background:var(--green);color:var(--gold-pale);padding:.75rem;cursor:pointer;border:none}
 
 /* CARDS & TRANS */
 .benefit-card{background:var(--parchment);border:1px solid var(--border);border-radius:4px;position:relative;margin-top:1rem}
 .card-main{padding:1.6rem 2rem 1.3rem}
-.tag{font-size:.68rem;text-transform:uppercase;padding:.18rem .55rem;border-radius:2px}
-.tag-verdicts{background:var(--green);color:var(--gold-pale)}
-.tag-audio{background:var(--rust);color:#f5eed8}
-.tag-text{background:var(--gold);color:var(--ink)}
 .arabic-text{font-family:'Noto Naskh Arabic',serif;font-size:1.2rem;line-height:2;text-align:right;direction:rtl;margin-top:1rem;border-top:1px solid var(--border);padding-top:1rem}
-.trans-header{display:flex;align-items:center;gap:.8rem;padding:.5rem 1rem;background:rgba(27,58,46,.05);border-top:1px solid var(--border)}
+.trans-panel{border-top: 1px solid var(--border);}
+.trans-header{display:flex;align-items:center;gap:.8rem;padding:.5rem 1rem;background:rgba(27,58,46,.05)}
 .lang-tab{padding:.2rem .6rem;cursor:pointer;border:1px solid var(--border);font-size:.8rem;border-radius:15px}
 .lang-tab.active{background:var(--green);color:white}
 .lang-pane{display:none;padding:1rem}
@@ -101,55 +86,43 @@ body::before{content:'';position:fixed;inset:0;background-image:repeating-linear
         <h3 style="margin-bottom:1rem; color:var(--green)">Contributor Login</h3>
         <input type="text" id="auth-user" placeholder="Username (e.g. admin or Urdu)">
         <input type="password" id="auth-pass" placeholder="Password">
-        <button class="save-btn" onclick="login()">Login</button>
+        <button class="save-btn" style="width:100%" onclick="login()">Login</button>
         <button class="btn-browse" style="width:100%; margin-top:0.5rem" onclick="closeAuth()">Cancel</button>
     </div>
 </div>
 
 <!-- ══ HOME ══ -->
 <div id="home" class="page active">
-  <svg class="ornament" width="110" height="44" viewBox="0 0 120 48"><path d="M60 4 C44 4 28 14 20 28 C12 42 4 44 4 44 C4 44 16 36 20 24 C24 12 40 6 60 6 C80 6 96 12 100 24 C104 36 116 44 116 44 C116 44 108 42 100 28 C92 14 76 4 60 4 Z" opacity=".8"/></svg>
   <h1 class="site-title">Benefits<span class="site-title-ar">فوائد</span></h1>
-  <p class="site-sub">A treasury of Islamic knowledge &amp; verdicts</p>
+  <p style="font-style:italic; color:var(--green-mid)">A treasury of Islamic knowledge & verdicts</p>
   <div class="divider"></div>
   <div class="home-cards">
     <div class="home-card">
-      <div class="card-title">Verdicts <span class="card-title-ar">فتاوى</span></div>
-      <p class="card-desc">Fatāwā and rulings from major scholars.</p>
-      <div class="card-footer">
-        <span class="card-count" id="cnt-verdicts">0</span>
-        <div class="card-btns"><button class="btn-browse" onclick="navigate('verdicts')">Browse</button>
-        <button class="btn-add-card" onclick="openAuthModal('admin', () => openModal('verdicts'))">+ Add</button></div>
-      </div>
+      <div class="card-title">Verdicts ⚖️</div>
+      <div class="card-footer"><span id="cnt-verdicts">0</span> <button class="btn-browse" onclick="navigate('verdicts')">Browse</button></div>
     </div>
     <div class="home-card">
-      <div class="card-title">Lecture Bits <span class="card-title-ar">دروس مختارة</span></div>
-      <p class="card-desc">Audio and transcription in video formats.</p>
-      <div class="card-footer">
-        <span class="card-count" id="cnt-audio">0</span>
-        <div class="card-btns"><button class="btn-browse" onclick="navigate('audio')">Browse</button>
-        <button class="btn-add-card" onclick="openAuthModal('admin', () => openModal('audio'))">+ Add</button></div>
-      </div>
+      <div class="card-title">Lecture Bits 📹</div>
+      <div class="card-footer"><span id="cnt-audio">0</span> <button class="btn-browse" onclick="navigate('audio')">Browse</button></div>
     </div>
     <div class="home-card">
-      <div class="card-title">Text Benefits <span class="card-title-ar">فوائد نصية</span></div>
-      <p class="card-desc">Written reminders across all languages.</p>
-      <div class="card-footer">
-        <span class="card-count" id="cnt-text">0</span>
-        <div class="card-btns"><button class="btn-browse" onclick="navigate('text')">Browse</button>
-        <button class="btn-add-card" onclick="openAuthModal('admin', () => openModal('text'))">+ Add</button></div>
-      </div>
+      <div class="card-title">Text Benefits 📜</div>
+      <div class="card-footer"><span id="cnt-text">0</span> <button class="btn-browse" onclick="navigate('text')">Browse</button></div>
+    </div>
+    <!-- NEW LANGUAGE BROWSE CARD -->
+    <div class="home-card" style="border: 1px solid var(--gold)">
+      <div class="card-title">Browse by Language 🌍</div>
+      <div class="card-footer"><span>Search</span> <button class="btn-browse" onclick="navigate('languages')">Enter</button></div>
     </div>
   </div>
 </div>
 
-<!-- ══ PAGE TEMPLATE (Dynamic) ══ -->
+<!-- ══ DYNAMIC INNER PAGE ══ -->
 <div id="inner-container" class="page">
     <div class="inner-page">
         <div class="page-header">
             <button class="back-btn" onclick="goHome()">← Home</button>
             <h2 id="inner-title" class="page-title"></h2>
-            <div id="inner-title-ar" class="page-title-ar"></div>
         </div>
         <div id="list-view"></div>
         <div id="single-view" style="display:none"></div>
@@ -158,194 +131,152 @@ body::before{content:'';position:fixed;inset:0;background-image:repeating-linear
 
 <!-- ══ MODAL ══ -->
 <div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
-<div class="modal">
-<button class="modal-close" style="position:absolute; top:1rem; right:1rem; background:none; border:none; cursor:pointer" onclick="closeModal()">✕</button>
-<h3 id="modal-title" style="margin-bottom:1.5rem">Add Benefit</h3>
-<div id="modal-body"></div>
-</div>
+    <div class="modal">
+        <button style="position:absolute; top:1rem; right:1rem; cursor:pointer" onclick="closeModal()">✕</button>
+        <h3 id="modal-title" style="margin-bottom:1.5rem"></h3>
+        <div id="modal-body"></div>
+    </div>
 </div>
 
 <script>
-/* AUTHENTICATION */
+/* AUTH & STORAGE */
 const ADMIN_PASS = "Nael2026";
-let currentUser = null;
-let pendingAction = null;
+let currentUser = null, pendingAction = null, curType = '';
+const load = () => JSON.parse(localStorage.getItem('ib_v3')) || {verdicts:[],audio:[],text:[]};
+const save = (d) => localStorage.setItem('ib_v3', JSON.stringify(d));
 
-function openAuthModal(requiredUser, action) {
-    if (currentUser === 'admin' || currentUser === requiredUser) { action(); return; }
-    pendingAction = action;
-    document.getElementById('auth-overlay').classList.add('open');
-}
+const LANGS = [
+  {code:'sw',name:'Swahili', native:'Kiswahili', rtl:false},
+  {code:'ur',name:'Urdu', native:'اردو', rtl:true},
+  {code:'ti',name:'Tigrinya', native:'ትግርኛ', rtl:false},
+  {code:'ru',name:'Russian', native:'Русский', rtl:false},
+  {code:'ms',name:'Malay', native:'Bahasa Melayu', rtl:false}
+];
 
 function login() {
-    const user = document.getElementById('auth-user').value;
-    const pass = document.getElementById('auth-pass').value;
-    // Logic: Admin matches ADMIN_PASS. Others match LanguageName1447
-    const isValid = (user === 'admin' && pass === ADMIN_PASS) || (pass === user + "1447");
-    
-    if (isValid) {
-        currentUser = user;
-        document.getElementById('auth-overlay').classList.remove('open');
+    const user = document.getElementById('auth-user').value, pass = document.getElementById('auth-pass').value;
+    if ((user === 'admin' && pass === ADMIN_PASS) || (pass === user + "1447")) {
+        currentUser = user; document.getElementById('auth-overlay').classList.remove('open');
         if (pendingAction) pendingAction();
-    } else {
-        alert("Incorrect credentials.");
-    }
+    } else alert("Incorrect credentials.");
 }
-function closeAuth() { document.getElementById('auth-overlay').classList.remove('open'); pendingAction = null; }
-
-/* DATA STORE */
-const KEY='ib_v3';
-function load(){return JSON.parse(localStorage.getItem(KEY))||{verdicts:[],audio:[],text:[]}}
-function save(d){localStorage.setItem(KEY,JSON.stringify(d))}
+function openAuthModal(user, action) { if(currentUser === 'admin' || currentUser === user) action(); else { pendingAction = action; document.getElementById('auth-overlay').classList.add('open'); } }
+function closeAuth() { document.getElementById('auth-overlay').classList.remove('open'); }
 
 /* NAVIGATION */
-let curType = '';
 function navigate(type) {
     curType = type;
     document.getElementById('home').classList.remove('active');
     document.getElementById('inner-container').classList.add('active');
-    document.getElementById('inner-title').textContent = {verdicts:'Verdicts',audio:'Lecture Bits',text:'Text Benefits'}[type];
-    renderList(type);
+    document.getElementById('inner-title').textContent = type === 'languages' ? 'Browse by Language' : type;
+    type === 'languages' ? renderLangList() : renderList(type);
 }
+
 function goHome() {
     document.getElementById('inner-container').classList.remove('active');
     document.getElementById('home').classList.add('active');
     updateCounts();
 }
 
+/* LIST RENDERING */
 function renderList(type) {
-    const d = load();
-    const items = d[type] || [];
+    const items = load()[type] || [];
     const listEl = document.getElementById('list-view');
     document.getElementById('single-view').style.display = 'none';
     listEl.style.display = 'block';
-    
-    if(!items.length) { listEl.innerHTML = "<p style='text-align:center; font-style:italic'>No entries found.</p>"; return; }
-    
-    listEl.innerHTML = items.map(it => `
-        <a href="#" class="entry-link" onclick="viewEntry('${type}','${it.id}')">
-            ${it.title} <span style="float:right; font-size:0.8rem; opacity:0.6">${it.scholar || ''}</span>
-        </a>
-    `).join('');
+    listEl.innerHTML = `<button class="btn-add-card" style="margin-bottom:1rem" onclick="openAuthModal('admin', () => openModal('${type}'))">+ Add New</button>`;
+    listEl.innerHTML += items.map(it => `<a href="#" class="entry-link" onclick="viewEntry('${type}','${it.id}')">${it.title}</a>`).join('');
+}
+
+function renderLangList() {
+    const listEl = document.getElementById('list-view');
+    document.getElementById('single-view').style.display = 'none';
+    listEl.style.display = 'block';
+    listEl.innerHTML = LANGS.map(l => `<a href="#" class="entry-link" onclick="viewByLanguage('${l.code}')">${l.native} (${l.name})</a>`).join('');
+}
+
+function viewByLanguage(langCode) {
+    const d = load();
+    const results = [];
+    ['verdicts','audio','text'].forEach(type => {
+        d[type].forEach(it => { if(it.translations[langCode]) results.push({...it, category: type}); });
+    });
+    const listEl = document.getElementById('list-view');
+    listEl.innerHTML = `<button onclick="renderLangList()" style="margin-bottom:1rem">← Back to Languages</button>`;
+    if(!results.length) listEl.innerHTML += `<p>No entries found for this language.</p>`;
+    listEl.innerHTML += results.map(it => `<a href="#" class="entry-link" onclick="viewEntry('${it.category}','${it.id}')">[${it.category.toUpperCase()}] ${it.title}</a>`).join('');
 }
 
 function viewEntry(type, id) {
-    const d = load();
-    const it = d[type].find(i => i.id === id);
+    const it = load()[type].find(i => i.id === id);
     const view = document.getElementById('single-view');
     document.getElementById('list-view').style.display = 'none';
     view.style.display = 'block';
-    view.innerHTML = `<button onclick="renderList('${type}')" style="margin-bottom:1rem; cursor:pointer">← Back to List</button>` + buildCard(it, type);
+    view.innerHTML = `<button onclick="${curType==='languages'?'viewByLanguage()':'renderList(curType)'}" style="margin-bottom:1rem">← Back</button>` + buildCard(it, type);
 }
 
-/* BUILDING COMPONENTS */
+/* UI COMPONENTS */
 function buildCard(it, type) {
-    const tagLabel = {verdicts:'Fatwa',audio:'Video bit',text:'Text'}[type];
-    let embed = '';
-    if (it.url) {
-        const yt = it.url.replace('watch?v=','embed/').replace('youtu.be/','www.youtube.com/embed/');
-        embed = `<iframe width="100%" height="315" src="${yt}" frameborder="0" allowfullscreen style="margin-top:1rem; border-radius:5px"></iframe>`;
-    }
-    
-    const trs = it.translations || {};
-    const codes = Object.keys(trs);
+    let embed = it.url ? `<iframe width="100%" height="315" src="${it.url.replace('watch?v=','embed/')}" frameborder="0" allowfullscreen style="margin-top:1rem"></iframe>` : '';
     let tabs = '', panes = '';
-    
-    codes.forEach((code, i) => {
-        const tr = trs[code];
-        const l = LANGS.find(lx => lx.code === code) || {native:code};
-        tabs += `<div class="lang-tab ${i===0?'active':''}" onclick="swTab('${it.id}','${code}')">${l.native}</div>`;
+    Object.keys(it.translations).forEach((code, i) => {
+        const tr = it.translations[code], l = LANGS.find(lx => lx.code === code) || {native:code};
+        tabs += `<div class="lang-tab ${i===0?'active':''}" onclick="swTab('${it.id}','${code}', event)">${l.native}</div>`;
         panes += `<div class="lang-pane ${i===0?'active':''}" id="lp-${it.id}-${code}">
-            <div style="font-size:0.9rem; color:var(--gold); margin-bottom:0.5rem">${l.name} ${tr.vetted?'✓':''}</div>
             <div class="trans-text ${l.rtl?'rtl':''}">${tr.text}</div>
-            <div style="margin-top:1rem">
-                <button onclick="openAuthModal('${l.name}', () => openTransModal('${type}','${it.id}','${code}'))">Edit</button>
-            </div>
+            <button style="margin-top:1rem" onclick="openAuthModal('${l.name}', () => openTransModal('${type}','${it.id}','${code}'))">Edit Translation</button>
         </div>`;
     });
-
-    return `
-    <div class="benefit-card" id="card-${it.id}">
-        <div class="card-main">
-            <span class="tag tag-${type}">${tagLabel}</span>
-            <h4 style="font-size:1.8rem; margin-top:0.5rem">${it.title}</h4>
-            <div style="color:var(--gold); font-style:italic">— ${it.scholar || ''}</div>
-            <p style="margin-top:1rem; line-height:1.6">${it.body || ''}</p>
-            ${it.arabic ? `<div class="arabic-text">${it.arabic}</div>` : ''}
-            ${embed}
-        </div>
-        <div class="trans-panel">
-            <div class="trans-header">
-                <div class="lang-tabs">${tabs}</div>
-                <button onclick="openAuthModal(null, () => openTransModal('${type}','${it.id}',null))">+ Add Translation</button>
-            </div>
-            ${panes || '<div style="padding:1rem">No translations yet.</div>'}
-        </div>
-    </div>`;
+    return `<div class="benefit-card" id="card-${it.id}"><div class="card-main"><h4>${it.title}</h4><p>${it.body}</p>${it.arabic?`<div class="arabic-text">${it.arabic}</div>`:''}${embed}</div>
+    <div class="trans-panel"><div class="trans-header"><div class="lang-tabs">${tabs}</div><button onclick="openAuthModal(null, () => openTransModal('${type}','${it.id}',null))">+ Add Translation</button></div>${panes}</div></div>`;
 }
 
-/* MODALS & HELPERS (Exact same logic from your provided code) */
-function swTab(itemId,code){
-    const card=document.getElementById('card-'+itemId);
-    card.querySelectorAll('.lang-tab').forEach(t=>t.classList.remove('active'));
-    card.querySelectorAll('.lang-pane').forEach(p=>p.classList.remove('active'));
-    event.target.classList.add('active');
+function swTab(itemId, code, ev) {
+    const card = document.getElementById('card-'+itemId);
+    card.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active'));
+    card.querySelectorAll('.lang-pane').forEach(p => p.classList.remove('active'));
+    ev.target.classList.add('active');
     document.getElementById(`lp-${itemId}-${code}`).classList.add('active');
 }
 
-function openModal(type){
-    mType=type;
+/* MODAL LOGIC */
+function openModal(type) {
     document.getElementById('modal-title').textContent = "Add " + type;
-    const sc=`<div class="field"><label>Scholar</label><input type="text" id="f-scholar"></div>`;
-    const ar=`<div class="field"><label>Arabic/Source Text</label><textarea id="f-arabic" dir="rtl"></textarea></div>`;
-    const ur=`<div class="field"><label>YouTube Link</label><input type="text" id="f-url"></div>`;
-    
-    let extra = type === 'audio' ? sc+ur+ar : sc+ar;
     document.getElementById('modal-body').innerHTML = `
         <div class="field"><label>Title</label><input type="text" id="f-title"></div>
-        ${extra}
+        <div class="field"><label>Scholar</label><input type="text" id="f-scholar"></div>
+        <div class="field"><label>Arabic/Source</label><textarea id="f-arabic" dir="rtl"></textarea></div>
+        ${type==='audio'?'<div class="field"><label>YouTube Link</label><input type="text" id="f-url"></div>':''}
         <div class="field"><label>English Summary</label><textarea id="f-body"></textarea></div>
-        <button class="save-btn" onclick="saveItem()">Save Entry</button>`;
+        <button class="save-btn" onclick="saveItem('${type}')">Save Entry</button>`;
     document.getElementById('modal-overlay').classList.add('open');
 }
 
-function saveItem(){
-    const d=load();
-    const it={id:Date.now().toString(36), date:new Date().toISOString(), title:document.getElementById('f-title').value, scholar:document.getElementById('f-scholar').value, body:document.getElementById('f-body').value, arabic:document.getElementById('f-arabic').value, url:document.getElementById('f-url')?.value||'', translations:{}};
-    d[mType].unshift(it); save(d); closeModal(); navigate(mType);
+function saveItem(type) {
+    const d = load();
+    const it = {id:Date.now().toString(36), title:document.getElementById('f-title').value, scholar:document.getElementById('f-scholar').value, body:document.getElementById('f-body').value, arabic:document.getElementById('f-arabic').value, url:document.getElementById('f-url')?.value||'', translations:{}};
+    d[type].unshift(it); save(d); closeModal(); navigate(type);
 }
 
-function openTransModal(type, itemId, code) {
-    tCtx = {type, itemId, code};
-    const d = load(); const it = d[type].find(i => i.id === itemId);
-    const ex = code ? it.translations[code] : null;
-    let langSel = code ? `<input type="text" disabled value="${code}">` : `<select id="f-lang">${LANGS.map(l=>`<option value="${l.code}">${l.name}</option>`).join('')}</select>`;
-    
+function openTransModal(type, id, code) {
+    const it = load()[type].find(i => i.id === id), ex = code ? it.translations[code] : null;
     document.getElementById('modal-body').innerHTML = `
-        <div class="field"><label>Language</label>${langSel}</div>
+        <div class="field"><label>Language</label>${code?code:`<select id="f-lang">${LANGS.map(l=>`<option value="${l.code}">${l.name}</option>`).join('')}</select>`}</div>
         <div class="field"><label>Translation</label><textarea id="f-ttext" style="height:150px">${ex?ex.text:''}</textarea></div>
-        <div class="field"><input type="checkbox" id="f-vetted" ${ex?.vetted?'checked':''}> <label>Vetted</label></div>
-        <button class="save-btn" onclick="saveTrans()">Save Translation</button>`;
+        <button class="save-btn" onclick="saveTrans('${type}','${id}','${code}')">Save Translation</button>`;
     document.getElementById('modal-overlay').classList.add('open');
 }
 
-function saveTrans() {
-    const d=load(); const it=d[tCtx.type].find(i=>i.id===tCtx.itemId);
-    const code = tCtx.code || document.getElementById('f-lang').value;
-    it.translations[code] = {text: document.getElementById('f-ttext').value, vetted: document.getElementById('f-vetted').checked};
-    save(d); closeModal(); viewEntry(tCtx.type, tCtx.itemId);
+function saveTrans(type, id, code) {
+    const d = load(), it = d[type].find(i => i.id === id);
+    const finalCode = code || document.getElementById('f-lang').value;
+    it.translations[finalCode] = {text: document.getElementById('f-ttext').value};
+    save(d); closeModal(); viewEntry(type, id);
 }
 
-function closeModal(){document.getElementById('modal-overlay').classList.remove('open');document.getElementById('auth-overlay').classList.remove('open');}
-function closeModalOutside(ev){if(ev.target.id==='modal-overlay')closeModal()}
-function updateCounts(){
-    const d=load();
-    document.getElementById('cnt-verdicts').textContent = d.verdicts.length;
-    document.getElementById('cnt-audio').textContent = d.audio.length;
-    document.getElementById('cnt-text').textContent = d.text.length;
-}
-
-const LANGS = [{code:'sw',name:'Swahili', native:'Kiswahili', rtl:false},{code:'ur',name:'Urdu', native:'اردو', rtl:true},{code:'bn',name:'Bengali', native:'বাংলা', rtl:false},{code:'fr',name:'French', native:'Français', rtl:false}];
+function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+function closeModalOutside(ev) { if(ev.target.id==='modal-overlay') closeModal(); }
+function updateCounts() { const d = load(); document.getElementById('cnt-verdicts').textContent = d.verdicts.length; document.getElementById('cnt-audio').textContent = d.audio.length; document.getElementById('cnt-text').textContent = d.text.length; }
 updateCounts();
 </script>
 </body>
