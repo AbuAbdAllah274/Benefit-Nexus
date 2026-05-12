@@ -15,41 +15,27 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Cormorant Garamond',Georgia,serif;background:var(--cream);color:var(--ink);min-height:100vh;overflow-x:hidden}
-
 .page{display:none;position:relative;z-index:1;min-height:100vh}
 .page.active{display:block}
-
 #home{display:none;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1.5rem;text-align:center}
 #home.active{display:flex}
 .site-title{font-family:'Amiri',serif;font-size:clamp(3rem,9vw,5.5rem);font-weight:700;color:var(--green);line-height:1;margin-top:1.2rem}
 .site-title-ar{font-family:'Noto Naskh Arabic',serif;font-size:clamp(2rem,6vw,4rem);color:var(--gold);display:block;margin-top:.3rem}
 .divider{width:160px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:2rem auto}
-
 .home-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;max-width:1000px;width:100%;margin-top:.5rem}
 .home-card{background:var(--parchment);border:1px solid var(--border);border-radius:6px;padding:1.5rem;box-shadow:0 2px 12px var(--shadow);transition:transform 0.3s}
 .home-card:hover{transform:translateY(-4px)}
 .card-title{font-size:1.3rem;font-weight:600;color:var(--green)}
 .card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:1.3rem}
-
 .btn-browse, .btn-add-card, .save-btn{font-family:'Cormorant Garamond',serif;padding:.4rem 1rem;cursor:pointer;border-radius:3px;transition:0.2s}
 .btn-browse{background:none;border:1px solid var(--green);color:var(--green)}
 .btn-add-card, .save-btn{background:var(--green);border:none;color:var(--gold-pale)}
-
-.entry-link {
-    display: block; background: var(--parchment); padding: 1.2rem; margin-bottom: 0.8rem;
-    border: 1px solid var(--border); border-radius: 4px; text-decoration: none;
-    color: var(--green); transition: 0.2s;
-}
+.entry-link { display: block; background: var(--parchment); padding: 1.2rem; margin-bottom: 0.8rem; border: 1px solid var(--border); border-radius: 4px; text-decoration: none; color: var(--green); transition: 0.2s;}
 .entry-link:hover { border-color: var(--gold); transform: translateX(5px); }
-
-#auth-overlay {
-    display: none; position: fixed; inset: 0; background: rgba(26,18,9,0.85);
-    z-index: 1000; align-items: center; justify-content: center;
-}
+#auth-overlay { display: none; position: fixed; inset: 0; background: rgba(26,18,9,0.85); z-index: 1000; align-items: center; justify-content: center; }
 #auth-overlay.open { display: flex; }
 .auth-box { background: var(--parchment); padding: 2rem; border-radius: 4px; width: 320px; border: 1px solid var(--gold); }
 .auth-box input { width: 100%; padding: 0.8rem; margin: 0.5rem 0; border: 1px solid var(--border); }
-
 .inner-page{max-width:920px;margin:0 auto;padding:2rem 1.5rem 5rem}
 .page-header{padding:2.5rem 0 1.8rem;text-align:center;position:relative}
 .back-btn{position:absolute;top:2.5rem;left:0;background:none;border:1px solid var(--border);padding:.4rem 1rem;cursor:pointer}
@@ -59,11 +45,10 @@ body{font-family:'Cormorant Garamond',Georgia,serif;background:var(--cream);colo
 .field{margin-bottom:1rem}
 .field label{display:block;font-size:.76rem;text-transform:uppercase;margin-bottom:.3rem}
 .field input, .field textarea, .field select{width:100%;background:var(--parchment);border:1px solid var(--border);padding:.55rem .85rem}
-
 .benefit-card{background:var(--parchment);border:1px solid var(--border);border-radius:4px;position:relative;margin-top:1rem}
 .card-main{padding:1.6rem 2rem 1.3rem}
 .source-highlight { color: var(--gold); font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; font-style: italic; display: block; border-left: 3px solid var(--gold); padding-left: 10px; }
-.english-summary { font-size: 1rem; color: var(--ink); line-height: 1.6; margin-bottom: 1.5rem; }
+.english-translation-box { font-size: 1.05rem; color: var(--ink); line-height: 1.7; margin-bottom: 1.5rem; padding: 1rem; background: rgba(184,134,11,0.05); border-radius: 4px; }
 .arabic-text{font-family:'Noto Naskh Arabic',serif;font-size:1.2rem;line-height:2;text-align:right;direction:rtl;margin-top:1rem;border-top:1px solid var(--border);padding-top:1rem}
 .trans-panel{border-top: 1px solid var(--border);}
 .trans-header{display:flex;align-items:center;gap:.8rem;padding:.5rem 1rem;background:rgba(27,58,46,.05)}
@@ -136,11 +121,37 @@ const load = () => JSON.parse(localStorage.getItem('ib_v3')) || {verdicts:[],aud
 const save = (d) => localStorage.setItem('ib_v3', JSON.stringify(d));
 
 const LANGS = [
-  {code:'sw',name:'Swahili', native:'Kiswahili', rtl:false},
-  {code:'ur',name:'Urdu', native:'اردو', rtl:true},
-  {code:'ti',name:'Tigrinya', native:'ትግርኛ', rtl:false},
-  {code:'ru',name:'Russian', native:'Русский', rtl:false},
-  {code:'ms',name:'Malay', native:'Bahasa Melayu', rtl:false}
+  {code:'af',name:'Afrikaans',native:'Afrikaans',rtl:false},
+  {code:'sq',name:'Albanian',native:'Shqip',rtl:false},
+  {code:'am',name:'Amharic',native:'አማርኛ',rtl:false},
+  {code:'ar',name:'Arabic',native:'العربية',rtl:true},
+  {code:'bn',name:'Bengali',native:'বাংলা',rtl:false},
+  {code:'bs',name:'Bosnian',native:'Bosanski',rtl:false},
+  {code:'zh',name:'Chinese',native:'中文',rtl:false},
+  {code:'nl',name:'Dutch',native:'Nederlands',rtl:false},
+  {code:'en',name:'English',native:'English',rtl:false},
+  {code:'fr',name:'French',native:'Français',rtl:false},
+  {code:'de',name:'German',native:'Deutsch',rtl:false},
+  {code:'ha',name:'Hausa',native:'Hausa',rtl:false},
+  {code:'hi',name:'Hindi',native:'हिन्दी',rtl:false},
+  {code:'id',name:'Indonesian',native:'Bahasa Indonesia',rtl:false},
+  {code:'it',name:'Italian',native:'Italiano',rtl:false},
+  {code:'ja',name:'Japanese',native:'日本語',rtl:false},
+  {code:'ms',name:'Malay',native:'Bahasa Melayu',rtl:false},
+  {code:'ps',name:'Pashto',native:'پښتو',rtl:true},
+  {code:'fa',name:'Persian',native:'فارسی',rtl:true},
+  {code:'pt',name:'Portuguese',native:'Português',rtl:false},
+  {code:'ru',name:'Russian',native:'Русский',rtl:false},
+  {code:'so',name:'Somali',native:'Soomaali',rtl:false},
+  {code:'es',name:'Spanish',native:'Español',rtl:false},
+  {code:'sw',name:'Swahili',native:'Kiswahili',rtl:false},
+  {code:'ta',name:'Tamil',native:'தமிழ்',rtl:false},
+  {code:'ti',name:'Tigrinya',native:'ትግርኛ',rtl:false},
+  {code:'tr',name:'Turkish',native:'Türkçe',rtl:false},
+  {code:'ur',name:'Urdu',native:'اردو',rtl:true},
+  {code:'uz',name:'Uzbek',native:'Oʻzbekcha',rtl:false},
+  {code:'yo',name:'Yoruba',native:'Yorùbá',rtl:false},
+  {code:'zu',name:'Zulu',native:'isiZulu',rtl:false}
 ];
 
 function login() {
@@ -192,10 +203,8 @@ function viewByLanguage(langCode) {
     const results = [];
     ['verdicts','audio','text'].forEach(type => {
         d[type].forEach(it => { 
-            // CRITICAL: Only show if a translation exists for this language
             if(it.translations[currentLangCode]) {
                 let displayTitle = "";
-                // Specific translation for the "Passing in front" verdict
                 if(it.title === "Ruling on passing in front of someone while they are praying." && currentLangCode === 'ti') {
                     displayTitle = "ሕጊ ኣብ ቅድሚ ሓደ ሰብ ክሰግድ ከሎ ምሕላፍ";
                 } else {
@@ -230,7 +239,7 @@ function viewEntry(type, id) {
 }
 
 function buildCard(it, type) {
-    let embed = it.url ? `<iframe width="100%" height="315" src="${it.url.replace('watch?v=','embed/')}" frameborder="0" allowfullscreen style="margin-top:1rem"></iframe>` : '';
+    let embed = it.url ? `<iframe width="100%" height="315" src="${it.url.replace('watch?v=','embed/')}" frameborder="0" allowfullscreen style="margin-top:1rem; border-radius:4px"></iframe>` : '';
     let tabs = '', panes = '';
     Object.keys(it.translations).forEach((code, i) => {
         const tr = it.translations[code], l = LANGS.find(lx => lx.code === code) || {native:code};
@@ -244,7 +253,7 @@ function buildCard(it, type) {
     <div class="benefit-card" id="card-${it.id}">
         <div class="card-main">
             <span class="source-highlight">— ${it.scholar || 'Source Unspecified'}</span>
-            <div class="english-summary">${it.body || 'English summary unavailable.'}</div>
+            <div class="english-translation-box">${it.english || 'English translation unavailable.'}</div>
             <h4 style="margin-top:1rem">${it.title}</h4>
             ${it.arabic?`<div class="arabic-text">${it.arabic}</div>`:''}
             ${embed}
@@ -270,25 +279,25 @@ function swTab(itemId, code, ev) {
 function openModal(type) {
     document.getElementById('modal-title').textContent = "Add " + (type === 'audio' ? 'Lecture Bit مقتطفات دروس' : type);
     document.getElementById('modal-body').innerHTML = `
-        <div class="field"><label>Title</label><input type="text" id="f-title"></div>
+        <div class="field"><label>Title (Internal Reference)</label><input type="text" id="f-title"></div>
         <div class="field"><label>Scholar / Source</label><input type="text" id="f-scholar"></div>
-        <div class="field"><label>Arabic/Source Text</label><textarea id="f-arabic" dir="rtl"></textarea></div>
+        <div class="field"><label>Source (Arabic)</label><textarea id="f-arabic" dir="rtl"></textarea></div>
         ${type==='audio'?'<div class="field"><label>YouTube Link</label><input type="text" id="f-url"></div>':''}
-        <div class="field"><label>English Summary</label><textarea id="f-body"></textarea></div>
+        <div class="field"><label>English Translation</label><textarea id="f-english"></textarea></div>
         <button class="save-btn" onclick="saveItem('${type}')">Save Entry</button>`;
     document.getElementById('modal-overlay').classList.add('open');
 }
 
 function saveItem(type) {
     const d = load();
-    const it = {id:Date.now().toString(36), title:document.getElementById('f-title').value, scholar:document.getElementById('f-scholar').value, body:document.getElementById('f-body').value, arabic:document.getElementById('f-arabic').value, url:document.getElementById('f-url')?.value||'', translations:{}};
+    const it = {id:Date.now().toString(36), title:document.getElementById('f-title').value, scholar:document.getElementById('f-scholar').value, arabic:document.getElementById('f-arabic').value, english:document.getElementById('f-english').value, url:document.getElementById('f-url')?.value||'', translations:{}};
     d[type].unshift(it); save(d); closeModal(); navigate(type);
 }
 
 function openTransModal(type, id, code) {
     const it = load()[type].find(i => i.id === id), ex = code ? it.translations[code] : null;
     document.getElementById('modal-body').innerHTML = `
-        <div class="field"><label>Language</label>${code?code:`<select id="f-lang">${LANGS.map(l=>`<option value="${l.code}">${l.name}</option>`).join('')}</select>`}</div>
+        <div class="field"><label>Language</label>${code?code:`<select id="f-lang">${LANGS.map(l=>`<option value="${l.code}">${l.name} (${l.native})</option>`).join('')}</select>`}</div>
         <div class="field"><label>Translation</label><textarea id="f-ttext" style="height:150px">${ex?ex.text:''}</textarea></div>
         <button class="save-btn" onclick="saveTrans('${type}','${id}','${code}')">Save Translation</button>`;
     document.getElementById('modal-overlay').classList.add('open');
