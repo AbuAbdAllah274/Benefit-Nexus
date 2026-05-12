@@ -58,12 +58,6 @@ body{font-family:'Cormorant Garamond',Georgia,serif;background:var(--cream);colo
 .inner-page{max-width:920px;margin:0 auto;padding:2rem 1.5rem 5rem}
 .page-header{padding:2.5rem 0 1.8rem;text-align:center;position:relative}
 .back-btn{position:absolute;top:2.5rem;left:0;background:none;border:1px solid var(--border);padding:.4rem 1rem;cursor:pointer}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(26,18,9,.65);z-index:200;align-items:center;justify-content:center}
-.modal-overlay.open{display:flex}
-.modal{background:var(--cream);padding:2.2rem;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;position:relative}
-.field{margin-bottom:1rem}
-.field label{display:block;font-size:.76rem;text-transform:uppercase;margin-bottom:.3rem}
-.field input, .field textarea, .field select{width:100%;background:var(--parchment);border:1px solid var(--border);padding:.55rem .85rem}
 
 /* CARDS & TRANS */
 .benefit-card{background:var(--parchment);border:1px solid var(--border);border-radius:4px;position:relative;margin-top:1rem}
@@ -142,7 +136,7 @@ body{font-family:'Cormorant Garamond',Georgia,serif;background:var(--cream);colo
 <script>
 /* AUTH & STORAGE */
 const ADMIN_PASS = "Nael2026";
-let currentUser = null, pendingAction = null, curType = '';
+let currentUser = null, pendingAction = null, curType = '', currentLangCode = '';
 const load = () => JSON.parse(localStorage.getItem('ib_v3')) || {verdicts:[],audio:[],text:[]};
 const save = (d) => localStorage.setItem('ib_v3', JSON.stringify(d));
 
@@ -197,16 +191,17 @@ function renderLangList() {
 }
 
 function viewByLanguage(langCode) {
+    currentLangCode = langCode || currentLangCode;
     const d = load();
-    const l = LANGS.find(lx => lx.code === langCode);
+    const l = LANGS.find(lx => lx.code === currentLangCode);
     document.getElementById('inner-title').textContent = l ? l.native : 'Language';
     
     const results = [];
     ['verdicts','audio','text'].forEach(type => {
         d[type].forEach(it => { 
-            if(it.translations[langCode]) {
-                // If a translation exists, we use that text as the title for the link
-                results.push({...it, category: type, displayTitle: it.translations[langCode].text}); 
+            if(it.translations[currentLangCode]) {
+                // FORCE: Use translated title for the link text
+                results.push({...it, category: type, displayTitle: it.translations[currentLangCode].text}); 
             }
         });
     });
@@ -227,14 +222,9 @@ function viewEntry(type, id) {
     const view = document.getElementById('single-view');
     document.getElementById('list-view').style.display = 'none';
     view.style.display = 'block';
-    view.innerHTML = `<button onclick="${curType==='languages'?'viewByLanguage(\'' + getLangCodeFromTitle() + '\')':'renderList(curType)'}" style="margin-bottom:1rem">← Back</button>` + buildCard(it, type);
-}
-
-// Helper to remember which language we were browsing when clicking "Back" from a single entry
-function getLangCodeFromTitle() {
-    const currentTitle = document.getElementById('inner-title').textContent;
-    const l = LANGS.find(lx => lx.native === currentTitle);
-    return l ? l.code : '';
+    // Logic to return correctly based on original browse path
+    const backFn = curType === 'languages' ? `viewByLanguage()` : `renderList('${curType}')`;
+    view.innerHTML = `<button onclick="${backFn}" style="margin-bottom:1rem">← Back</button>` + buildCard(it, type);
 }
 
 /* UI COMPONENTS */
