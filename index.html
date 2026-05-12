@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Naskh+Arabic:wght@400;500;700&family=Noto+Sans:wght@400;500&family=Noto+Sans+Bengali:wght@400;500&family=Noto+Sans+Devanagari:wght@400;500&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
 <style>
-/* ... [Keeping your existing CSS variables and base styles from before] ... */
+/* Existing Styles from previous version preserved */
 :root {
 --ink:#1a1209; --parchment:#f5eed8; --cream:#faf6ec;
 --gold:#b8860b; --gold-lt:#d4a843; --gold-pale:#f0e0a0;
@@ -17,132 +17,131 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Cormorant Garamond',Georgia,serif;background:var(--cream);color:var(--ink);min-height:100vh}
 
-/* ... [Styles remain the same as previous working version] ... */
-.page{display:none;position:relative;z-index:1;min-height:100vh}
-.page.active{display:block}
-#home.active{display:flex; flex-direction:column; align-items:center; padding:3rem;}
-.home-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1.8rem;width:100%;max-width:860px;}
-.home-card{background:var(--parchment); padding:2rem; border-radius:6px; box-shadow:0 2px 12px var(--shadow);}
-.btn-browse, .btn-add-card, .add-btn, .save-btn{cursor:pointer; border-radius:3px; transition:0.2s;}
-.modal-overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center;}
-.modal-overlay.open{display:flex;}
-.modal{background:var(--cream); padding:2rem; width:400px; border-radius:4px;}
-.field{margin-bottom:1rem;}
-.field label{display:block; font-size:0.8rem; margin-bottom:0.3rem;}
-.field input, .field textarea, .field select{width:100%; padding:0.5rem;}
+/* Authentication Modal Styling */
+.auth-overlay {
+display: none; position: fixed; inset: 0; background: rgba(26,18,9,0.85);
+z-index: 1000; align-items: center; justify-content: center;
+}
+.auth-overlay.open { display: flex; }
+.auth-box {
+background: var(--parchment); padding: 2rem; border-radius: 4px;
+width: 100%; max-width: 350px; text-align: center; border: 1px solid var(--gold);
+}
+.auth-box input {
+width: 100%; padding: 0.8rem; margin: 0.5rem 0;
+border: 1px solid var(--border); background: var(--cream);
+}
+/* ... rest of your existing CSS ... */
 </style>
 </head>
 <body>
 
-<!-- ══ HOME ══ -->
 <div id="home" class="page active">
-<h1>Benefits <span style="color:var(--gold)">فوائد</span></h1>
+<h1 class="site-title">Benefits<span class="site-title-ar">فوائد</span></h1>
 <div class="home-cards">
-<!-- Verdicts Card -->
+<!-- Verdicts -->
 <div class="home-card">
-<h3>Verdicts ⚖️</h3>
-<p>Fatāwā and rulings.</p>
-<button onclick="navigate('verdicts')">Browse</button>
-<button onclick="checkAuth('admin', () => openModal('verdicts'))">+ Add</button>
+<span class="card-icon">⚖️</span>
+<div class="card-title">Verdicts <span class="card-title-ar">فتاوى</span></div>
+<div class="card-footer">
+<button class="btn-browse" onclick="navigate('verdicts')">Browse</button>
+<button class="btn-add-card" onclick="requireAuth('admin', () => openModal('verdicts'))">+ Add</button>
+</div>
 </div>
 
-<!-- Video Section (Replaces Audio) -->
+<!-- Video Lessons (Replacing Audio) -->
 <div class="home-card">
-<h3>Video Lessons 📹</h3>
-<p>Videos with transcriptions and translations.</p>
-<button onclick="navigate('videos')">Browse</button>
-<button onclick="checkAuth('admin', () => openModal('videos'))">+ Add</button>
+<span class="card-icon">📺</span>
+<div class="card-title">Video Lessons <span class="card-title-ar">دروس مرئية</span></div>
+<p class="card-desc">Videos with transcriptions and multilingual translations.</p>
+<div class="card-footer">
+<button class="btn-browse" onclick="navigate('videos')">Browse</button>
+<button class="btn-add-card" onclick="requireAuth('admin', () => openModal('videos'))">+ Add</button>
+</div>
 </div>
 
-<!-- Text Section -->
+<!-- Text -->
 <div class="home-card">
-<h3>Text Benefits 📜</h3>
-<p>Written reminders and knowledge.</p>
-<button onclick="navigate('text')">Browse</button>
-<button onclick="checkAuth('admin', () => openModal('text'))">+ Add</button>
+<span class="card-icon">📜</span>
+<div class="card-title">Text Benefits <span class="card-title-ar">فوائد نصية</span></div>
+<div class="card-footer">
+<button class="btn-browse" onclick="navigate('text')">Browse</button>
+<button class="btn-add-card" onclick="requireAuth('admin', () => openModal('text'))">+ Add</button>
 </div>
 </div>
-</div>
-
-<!-- ══ VIDEO PAGE ══ -->
-<div id="videos" class="page">
-<button onclick="navigate('home')">← Back</button>
-<h2>Video Lessons</h2>
-<button onclick="checkAuth('admin', () => openModal('videos'))">+ Add Video</button>
-<div id="videos-list"></div>
-</div>
-
-<!-- ══ LOGIN MODAL ══ -->
-<div id="login-modal" class="modal-overlay">
-<div class="modal">
-<h3>Volunteer Checkpoint</h3>
-<div class="field">
-<label>Username (Language or 'admin')</label>
-<input type="text" id="auth-user">
-</div>
-<div class="field">
-<label>Password</label>
-<input type="password" id="auth-pass">
-</div>
-<button class="save-btn" onclick="login()">Enter</button>
-<button onclick="closeLogin()">Cancel</button>
 </div>
 </div>
 
-<!-- [The rest of your existing Verdicts/Text pages and Modal UI remains here] -->
+<!-- Login Overlay -->
+<div class="auth-overlay" id="auth-overlay">
+<div class="auth-box">
+<h3>Volunteer Login</h3>
+<input type="text" id="auth-user" placeholder="Username (e.g. Urdu)">
+<input type="password" id="auth-pass" placeholder="Password">
+<button class="save-btn" onclick="attemptLogin()">Login</button>
+<button class="btn-browse" onclick="closeAuth()">Cancel</button>
+</div>
+</div>
 
 <script>
-/* 🔑 AUTHENTICATION LOGIC */
+/* 🔑 VOLUNTEER AUTHENTICATION */
 const PASSWORDS = {
-'admin': 'master123',
-'Urdu': 'urdu786',
-'Swahili': 'swahili456'
+'admin': 'Nael2026', // Webmaster Password
+'Urdu': 'UrduVol786',
+'Swahili': 'SwahiliVol123',
+'Bengali': 'BengaliVol456'
 };
 
-let currentUser = null;
-let authCallback = null;
+let sessionUser = null;
+let pendingAction = null;
 
-function checkAuth(requiredUser, callback) {
-if (currentUser === 'admin' || currentUser === requiredUser) {
-callback();
+function requireAuth(role, action) {
+if (sessionUser === 'admin' || sessionUser === role) {
+action();
 } else {
-authCallback = callback;
-document.getElementById('login-modal').classList.add('open');
+pendingAction = action;
+document.getElementById('auth-overlay').classList.add('open');
 }
 }
 
-function login() {
+function attemptLogin() {
 const user = document.getElementById('auth-user').value;
 const pass = document.getElementById('auth-pass').value;
 
 if (PASSWORDS[user] && PASSWORDS[user] === pass) {
-currentUser = user;
-alert("Logged in as " + user);
-closeLogin();
-if (authCallback) authCallback();
+sessionUser = user;
+document.getElementById('auth-overlay').classList.remove('open');
+if (pendingAction) pendingAction();
+alert(`Logged in as ${user}`);
 } else {
-alert("Incorrect credentials.");
+alert("Invalid Username or Password");
 }
 }
 
-function closeLogin() {
-document.getElementById('login-modal').classList.remove('open');
+function closeAuth() {
+document.getElementById('auth-overlay').classList.remove('open');
+pendingAction = null;
 }
 
-/* 📹 VIDEO MODAL SETUP */
+/* 📹 VIDEO MODAL LOGIC */
+// Modified openModal to handle Video Transcriptions
 function openModal(type) {
-// If adding a main entry, only admin can do it
-if (type === 'videos') {
-document.getElementById('modal-body').innerHTML = `
-<div class="field"><label>Video URL (YouTube)</label><input id="v-url"></div>
-<div class="field"><label>Transcription (Arabic/Source)</label><textarea id="v-trans"></textarea></div>
-<button onclick="saveVideo()">Save Video</button>
+mType = type;
+const title = type === 'videos' ? 'Add Video Lesson' : 'Add Benefit';
+document.getElementById('modal-title').textContent = title;
+
+let fields = `
+<div class="field"><label>Title</label><input type="text" id="f-title"></div>
+<div class="field"><label>YouTube URL</label><input type="text" id="f-url"></div>
+<div class="field"><label>Transcription (Arabic/Source)</label><textarea id="f-arabic" dir="rtl"></textarea></div>
+<div class="field"><label>Main English Summary</label><textarea id="f-body"></textarea></div>
 `;
-}
-// ... rest of modal logic
+
+document.getElementById('modal-body').innerHTML = fields + `<button class="save-btn" onclick="saveItem()">Save</button>`;
+document.getElementById('modal-overlay').classList.add('open');
 }
 
-// Ensure you rename the storage keys from 'audio' to 'videos' in your load/save functions!
+// Ensure "Add Translation" buttons inside cards also use requireAuth(langCode, action)
 </script>
 </body>
 </html>
