@@ -4,258 +4,284 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>فوائد · Benefits</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:wght@300;400;600&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --ink: #1a1209; --parchment: #f5eed8; --cream: #faf6ec;
-            --gold: #b8860b; --gold-lt: #d4a843; --gold-pale: #f0e0a0;
-            --green: #1b3a2e; --green-mid: #2d5c47; --green-lt: #4a8c6f;
-            --rust: #8b3a1a; --border: rgba(184,134,11,.25); --shadow: rgba(26,18,9,.15);
+            --gold: #b8860b; --gold-lt: #d4a843; --green: #1b3a2e;
+            --green-mid: #2d5c47; --rust: #8b3a1a; --border: rgba(184,134,11,.25);
         }
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Cormorant Garamond', Georgia, serif; background: var(--cream); color: var(--ink); min-height: 100vh; line-height: 1.6; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Georgia, serif; background: var(--cream); color: var(--ink); min-height: 100vh; padding: 20px; }
         
-        .page { display: none; padding: 2rem 1.5rem; max-width: 900px; margin: 0 auto; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .page { display: none; }
         .page.active { display: block; }
-        #home.active { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-
-        .site-title { font-family: 'Amiri', serif; font-size: clamp(3rem, 9vw, 5rem); color: var(--green); line-height: 1; margin-top: 1rem; }
-        .site-title-ar { font-family: 'Noto Naskh Arabic', serif; font-size: 0.7em; color: var(--gold); display: block; margin-top: 0.5rem; }
         
-        .divider { width: 160px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 2rem auto; }
+        /* Typography */
+        h1 { font-size: 3rem; color: var(--green); text-align: center; margin-bottom: 0.5rem; }
+        h1 span { color: var(--gold); display: block; font-size: 0.7em; }
+        .divider { width: 100px; height: 2px; background: var(--gold); margin: 20px auto; opacity: 0.3; }
 
-        .home-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; width: 100%; margin-top: 1rem; }
-        .home-card { background: var(--parchment); border: 1px solid var(--border); padding: 1.5rem; border-radius: 6px; box-shadow: 0 2px 12px var(--shadow); transition: 0.3s; text-align: left; }
-        .home-card:hover { transform: translateY(-4px); }
-        .card-count { color: var(--green-mid); font-size: 0.9rem; margin-top: 10px; display: block; }
-
-        .btn { cursor: pointer; padding: 0.5rem 1.2rem; font-family: inherit; border-radius: 3px; font-size: 1rem; transition: 0.2s; display: inline-block; text-decoration: none; }
+        /* Cards */
+        .card { background: var(--parchment); border: 1px solid var(--border); padding: 20px; border-radius: 6px; margin-bottom: 15px; position: relative; }
+        .entry-link { background: var(--parchment); padding: 15px; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 10px; cursor: pointer; color: var(--green); display: block; text-decoration: none; }
+        
+        /* Buttons */
+        .btn { padding: 8px 16px; cursor: pointer; border-radius: 4px; font-family: inherit; transition: 0.2s; font-size: 0.9rem; }
+        .btn-solid { background: var(--green); color: white; border: none; }
         .btn-outline { background: none; border: 1px solid var(--green); color: var(--green); }
-        .btn-outline:hover { background: var(--green); color: white; }
-        .btn-solid { background: var(--green); color: var(--gold-pale); border: none; }
-        .btn-solid:hover { opacity: 0.9; }
+        .btn-danger { color: var(--rust); border: 1px solid var(--rust); background: none; }
 
-        .entry-link { background: var(--parchment); padding: 1.1rem; margin-bottom: 0.8rem; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; color: var(--green); transition: 0.2s; font-weight: 500; }
-        .entry-link:hover { border-color: var(--gold); transform: translateX(5px); }
+        /* Forms */
+        input, textarea, select { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid var(--border); background: white; font-family: inherit; }
+        label { font-size: 0.8rem; text-transform: uppercase; color: var(--green-mid); font-weight: bold; }
 
         /* Modals */
-        .overlay { display: none; position: fixed; inset: 0; background: rgba(26,18,9,0.85); z-index: 1000; align-items: center; justify-content: center; padding: 10px; }
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
         .overlay.active { display: flex; }
-        .modal { background: var(--cream); padding: 2rem; border-radius: 4px; width: 100%; max-width: 500px; border: 1px solid var(--gold); position: relative; max-height: 95vh; overflow-y: auto; }
+        .modal { background: var(--cream); padding: 25px; border-radius: 5px; width: 100%; max-width: 500px; }
 
-        .field { margin-bottom: 1.2rem; }
-        .field label { display: block; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 5px; color: var(--green-mid); letter-spacing: 0.05em; font-weight: bold; }
-        .field input, .field textarea, .field select { width: 100%; padding: 10px; background: var(--parchment); border: 1px solid var(--border); font-family: inherit; font-size: 1rem; }
-        
-        .arabic-display { font-family: 'Noto Naskh Arabic', serif; direction: rtl; text-align: right; font-size: 1.4rem; line-height: 2.2; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
-        .benefit-card { background: var(--parchment); border: 1px solid var(--border); padding: 1.5rem; border-radius: 4px; position: relative; }
-        .source-tag { color: var(--gold); font-size: 1.1rem; font-weight: 700; font-style: italic; border-left: 3px solid var(--gold); padding-left: 10px; margin-bottom: 1rem; display: block; }
-        .english-box { background: rgba(184,134,11,0.05); padding: 1rem; border-left: 2px solid var(--gold-lt); margin-bottom: 1rem; }
+        .arabic { font-size: 1.4rem; direction: rtl; text-align: right; line-height: 2; margin: 10px 0; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .english-box { background: rgba(184,134,11,0.05); padding: 15px; border-left: 3px solid var(--gold-lt); margin: 10px 0; }
     </style>
 </head>
 <body>
 
-<!-- Login Modal -->
-<div id="auth-modal" class="overlay">
+<div class="container">
+    <!-- HOME PAGE -->
+    <div id="page-home" class="page active">
+        <h1>Benefits <span>فوائد</span></h1>
+        <div class="divider"></div>
+        <div id="counts" style="text-align: center; margin-bottom: 20px; color: var(--green-mid);"></div>
+        
+        <div class="card" onclick="showList('verdicts')"><h3>Verdicts</h3><p>Click to browse</p></div>
+        <div class="card" onclick="showList('audio')"><h3>Lecture Bits</h3><p>Click to browse</p></div>
+        <div class="card" onclick="showList('text')"><h3>Text Benefits</h3><p>Click to browse</p></div>
+        <div class="card" onclick="showLanguages()" style="border: 1px solid var(--gold)"><h3>Browse by Language</h3></div>
+    </div>
+
+    <!-- LIST PAGE -->
+    <div id="page-list" class="page">
+        <button class="btn btn-outline" onclick="showHome()">← Home</button>
+        <h2 id="list-title" style="margin: 20px 0; color: var(--green);"></h2>
+        <button class="btn btn-solid" style="margin-bottom: 15px;" onclick="openAddEntryModal()">+ Add Main Entry (Admin)</button>
+        <div id="list-content"></div>
+    </div>
+
+    <!-- ENTRY VIEW PAGE -->
+    <div id="page-entry" class="page">
+        <button class="btn btn-outline" onclick="window.history.back()">← Back</button>
+        <div id="entry-content" style="margin-top:20px;"></div>
+    </div>
+</div>
+
+<!-- MODALS -->
+<div id="modal-auth" class="overlay">
     <div class="modal">
-        <h3 style="margin-bottom:1rem; font-family:'Amiri', serif;">Contributor Login</h3>
-        <input type="text" id="auth-user" placeholder="Username" style="width:100%; padding:10px; margin-bottom:10px;">
-        <input type="password" id="auth-pass" placeholder="Password" style="width:100%; padding:10px; margin-bottom:10px;">
-        <button class="btn btn-solid" style="width:100%" onclick="handleLogin()">Login</button>
-        <button class="btn btn-outline" style="width:100%; margin-top:10px;" onclick="closeAuth()">Cancel</button>
+        <h3>Login Required</h3>
+        <input type="text" id="login-user" placeholder="Username">
+        <input type="password" id="login-pass" placeholder="Password">
+        <button class="btn btn-solid" onclick="attemptLogin()">Login</button>
+        <button class="btn btn-outline" onclick="closeModals()">Cancel</button>
     </div>
 </div>
 
-<!-- Entry Modal -->
-<div id="entry-modal" class="overlay">
+<div id="modal-entry" class="overlay">
     <div class="modal">
-        <h3 id="modal-title" style="margin-bottom:1rem; font-family:'Amiri', serif;">Add Entry</h3>
-        <div class="field"><label>Title</label><input type="text" id="f-title"></div>
-        <div class="field"><label>Scholar</label><input type="text" id="f-scholar"></div>
-        <div class="field"><label>Arabic</label><textarea id="f-arabic" rows="4" dir="rtl"></textarea></div>
-        <div class="field"><label>English</label><textarea id="f-english" rows="4"></textarea></div>
-        <div id="url-field" class="field" style="display:none;"><label>YouTube URL</label><input type="text" id="f-url"></div>
-        <button class="btn btn-solid" style="width:100%" onclick="saveEntry()">Save Entry</button>
+        <h3 id="entry-modal-title">Add Entry</h3>
+        <label>Title</label><input type="text" id="f-title">
+        <label>Scholar</label><input type="text" id="f-scholar">
+        <label>Arabic Text</label><textarea id="f-arabic" rows="3"></textarea>
+        <label>English Translation</label><textarea id="f-english" rows="3"></textarea>
+        <button class="btn btn-solid" onclick="saveEntry()">Save</button>
+        <button class="btn btn-outline" onclick="closeModals()">Cancel</button>
     </div>
 </div>
 
-<!-- Home Page -->
-<div id="home" class="page active">
-    <h1 class="site-title">Benefits <span class="site-title-ar">فوائد</span></h1>
-    <p style="color:var(--green-mid)">A treasury of Islamic knowledge & verdicts</p>
-    <div class="divider"></div>
-    <div class="home-cards">
-        <div class="home-card">
-            <h3 style="color:var(--green)">Verdicts</h3>
-            <span class="card-count" id="count-verdicts">0 entries</span>
-            <div style="margin-top:1rem;"><button class="btn btn-outline" onclick="navigate('verdicts')">Browse</button></div>
-        </div>
-        <div class="home-card">
-            <h3 style="color:var(--green)">Lecture Bits</h3>
-            <span class="card-count" id="count-audio">0 entries</span>
-            <div style="margin-top:1rem;"><button class="btn btn-outline" onclick="navigate('audio')">Browse</button></div>
-        </div>
-        <div class="home-card">
-            <h3 style="color:var(--green)">Text Benefits</h3>
-            <span class="card-count" id="count-text">0 entries</span>
-            <div style="margin-top:1rem;"><button class="btn btn-outline" onclick="navigate('text')">Browse</button></div>
-        </div>
-        <div class="home-card" style="border-color: var(--gold);">
-            <h3 style="color:var(--green)">Languages</h3>
-            <span class="card-count">Browse by Language</span>
-            <div style="margin-top:1rem;"><button class="btn btn-outline" onclick="navigate('languages')">Enter</button></div>
-        </div>
+<div id="modal-trans" class="overlay">
+    <div class="modal">
+        <h3>Add/Edit Translation</h3>
+        <label>Language</label>
+        <select id="f-lang">
+            <option value="ur">Urdu (اردو)</option>
+            <option value="bn">Bengali (বাংলা)</option>
+            <option value="sw">Swahili (Kiswahili)</option>
+            <option value="ar">Arabic (العربية)</option>
+            <option value="fr">French (Français)</option>
+        </select>
+        <label>Translation Text</label>
+        <textarea id="f-trans-text" rows="5"></textarea>
+        <button class="btn btn-solid" onclick="saveTranslation()">Save Translation</button>
+        <button class="btn btn-outline" onclick="closeModals()">Cancel</button>
     </div>
-</div>
-
-<!-- List/View Page -->
-<div id="inner" class="page">
-    <button class="btn btn-outline" onclick="goHome()">← Home</button>
-    <h2 id="view-title" style="margin: 1.5rem 0; font-family:'Amiri', serif; color:var(--green); font-size:2rem;"></h2>
-    <div id="list-controls">
-        <button class="btn btn-solid" style="margin-bottom:1.5rem" onclick="checkAuth('admin', openAddForm)">+ Add New Entry</button>
-    </div>
-    <div id="content-area"></div>
 </div>
 
 <script>
-    const ADMIN_USER = "admin";
-    const ADMIN_PASS = "Nael2026";
-    
-    let db = JSON.parse(localStorage.getItem('ib_v4')) || { verdicts: [], audio: [], text: [] };
-    let currentView = 'home';
+    // Database Logic - Supports multiple versions to try and find your lost data
+    let db = JSON.parse(localStorage.getItem('fawaid_v1')) || 
+             JSON.parse(localStorage.getItem('ib_v4')) || 
+             JSON.parse(localStorage.getItem('ib_v3')) || 
+             { verdicts: [], audio: [], text: [] };
+
     let currentType = '';
+    let currentEntryId = null;
     let currentUser = null;
     let pendingAction = null;
 
-    function save() { localStorage.setItem('ib_v4', JSON.stringify(db)); updateCounts(); }
+    function saveDB() {
+        localStorage.setItem('fawaid_v1', JSON.stringify(db));
+        updateCounts();
+    }
 
-    function navigate(type) {
+    function updateCounts() {
+        document.getElementById('counts').innerText = 
+            `Verdicts: ${db.verdicts.length} | Bits: ${db.audio.length} | Text: ${db.text.length}`;
+    }
+
+    // Navigation
+    function showHome() {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById('page-home').classList.add('active');
+        updateCounts();
+    }
+
+    function showList(type) {
         currentType = type;
-        document.getElementById('home').classList.remove('active');
-        document.getElementById('inner').classList.add('active');
-        const titles = {verdicts: 'Verdicts أحكام', audio: 'Lecture Bits مقتطفات', text: 'Text Benefits فوائد', languages: 'Browse by Language'};
-        document.getElementById('view-title').textContent = titles[type];
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById('page-list').classList.add('active');
+        document.getElementById('list-title').innerText = type.toUpperCase();
         
-        if(type === 'languages') {
-            renderLanguages();
-        } else {
-            renderList();
-        }
+        const content = document.getElementById('list-content');
+        content.innerHTML = '';
+        db[type].forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'entry-link';
+            div.innerText = item.title || 'Untitled';
+            div.onclick = () => showEntry(item.id);
+            content.appendChild(div);
+        });
     }
 
-    function goHome() {
-        document.getElementById('inner').classList.remove('active');
-        document.getElementById('home').classList.add('active');
-    }
+    function showEntry(id) {
+        currentEntryId = id;
+        const item = db[currentType].find(i => i.id === id);
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        const page = document.getElementById('page-entry');
+        page.classList.add('active');
 
-    function renderList() {
-        document.getElementById('list-controls').style.display = 'block';
-        const area = document.getElementById('content-area');
-        const items = db[currentType] || [];
-        if(items.length === 0) {
-            area.innerHTML = "<p style='font-style:italic; color:var(--green-mid)'>No entries yet.</p>";
-        } else {
-            area.innerHTML = items.map((it, idx) => `
-                <div class="entry-link" onclick="viewEntry(${idx})">${it.title}</div>
-            `).join('');
-        }
-    }
-
-    function renderLanguages() {
-        document.getElementById('list-controls').style.display = 'none';
-        const area = document.getElementById('content-area');
-        area.innerHTML = "<p>Feature coming in the next data update. Currently browsing by category is active.</p>";
-    }
-
-    function viewEntry(idx) {
-        document.getElementById('list-controls').style.display = 'none';
-        const it = db[currentType][idx];
-        const area = document.getElementById('content-area');
-        
-        let embed = "";
-        if(it.url) {
-            const vidId = it.url.split('v=')[1] || it.url.split('/').pop();
-            embed = `<iframe width="100%" height="315" src="https://www.youtube.com/embed/${vidId}" frameborder="0" allowfullscreen style="margin-top:1rem; border-radius:4px;"></iframe>`;
+        let transHtml = '';
+        for (let code in item.translations) {
+            transHtml += `
+                <div class="card" style="margin-top:10px">
+                    <label>${code.toUpperCase()}</label>
+                    <p>${item.translations[code].text}</p>
+                    <button class="btn btn-outline" onclick="openTransModal('${code}')">Edit</button>
+                </div>`;
         }
 
-        area.innerHTML = `
-            <button class="btn btn-outline" style="margin-bottom:1rem" onclick="renderList()">← Back to List</button>
-            <div class="benefit-card">
-                <span class="source-tag">— ${it.scholar || 'Source Unspecified'}</span>
-                <div class="arabic-display">${it.arabic || ''}</div>
-                <div class="english-box">${it.english || 'No translation provided.'}</div>
-                ${embed}
-                <div style="margin-top:1.5rem">
-                    <button class="btn btn-outline" style="color:var(--rust); border-color:var(--rust);" onclick="checkAuth('admin', () => deleteItem(${idx}))">Delete Entry</button>
-                </div>
+        document.getElementById('entry-content').innerHTML = `
+            <div class="card">
+                <button class="btn btn-danger" style="float:right" onclick="deleteEntry('${id}')">Delete (Admin)</button>
+                <h2 style="color:var(--green)">${item.title}</h2>
+                <p><strong>Scholar:</strong> ${item.scholar}</p>
+                <div class="arabic">${item.arabic}</div>
+                <div class="english-box">${item.english}</div>
+                <button class="btn btn-solid" onclick="openTransModal()">+ Add Translation</button>
             </div>
+            <h3>Translations</h3>
+            ${transHtml}
         `;
     }
 
-    function openAddForm() {
-        document.getElementById('f-title').value = '';
-        document.getElementById('f-scholar').value = '';
-        document.getElementById('f-arabic').value = '';
-        document.getElementById('f-english').value = '';
-        document.getElementById('f-url').value = '';
-        document.getElementById('url-field').style.display = currentType === 'audio' ? 'block' : 'none';
-        document.getElementById('entry-modal').classList.add('active');
+    // Auth
+    function openAddEntryModal() {
+        requireAuth('admin', () => {
+            document.getElementById('entry-modal-title').innerText = "Add " + currentType;
+            document.getElementById('modal-entry').classList.add('active');
+        });
     }
 
+    function deleteEntry(id) {
+        requireAuth('admin', () => {
+            if(confirm("Permanently delete?")) {
+                db[currentType] = db[currentType].filter(i => i.id !== id);
+                saveDB();
+                showList(currentType);
+            }
+        });
+    }
+
+    function requireAuth(role, action) {
+        if (currentUser === role || (role === 'any')) {
+            action();
+        } else {
+            pendingAction = { role, action };
+            document.getElementById('modal-auth').classList.add('active');
+        }
+    }
+
+    function attemptLogin() {
+        const u = document.getElementById('login-user').value.toLowerCase();
+        const p = document.getElementById('login-pass').value;
+
+        if (u === 'admin' && p === 'Nael2026') {
+            currentUser = 'admin';
+            document.getElementById('modal-auth').classList.remove('active');
+            if (pendingAction) pendingAction.action();
+        } else if (u && p === (u + "1447")) {
+            currentUser = u;
+            document.getElementById('modal-auth').classList.remove('active');
+            if (pendingAction) pendingAction.action();
+        } else {
+            alert("Wrong credentials");
+        }
+    }
+
+    // Modal Actions
     function saveEntry() {
-        const title = document.getElementById('f-title').value;
-        if(!title) return alert("Title required");
-        
-        db[currentType].unshift({
-            title,
+        const newItem = {
+            id: Date.now().toString(),
+            title: document.getElementById('f-title').value,
             scholar: document.getElementById('f-scholar').value,
             arabic: document.getElementById('f-arabic').value,
             english: document.getElementById('f-english').value,
-            url: document.getElementById('f-url').value,
-            id: Date.now()
+            translations: {}
+        };
+        db[currentType].push(newItem);
+        saveDB();
+        closeModals();
+        showList(currentType);
+    }
+
+    function openTransModal(existingCode = null) {
+        // Translations do not require a login unless editing an existing one? 
+        // Based on your request: Only Admin needs password. Contributors use Language + 1447.
+        // Let's set it so adding a translation asks for your Language login.
+        requireAuth('any', () => {
+            if (existingCode) {
+                const item = db[currentType].find(i => i.id === currentEntryId);
+                document.getElementById('f-lang').value = existingCode;
+                document.getElementById('f-trans-text').value = item.translations[existingCode].text;
+            } else {
+                document.getElementById('f-trans-text').value = '';
+            }
+            document.getElementById('modal-trans').classList.add('active');
         });
-        save();
-        document.getElementById('entry-modal').classList.remove('active');
-        renderList();
     }
 
-    function deleteItem(idx) {
-        if(!confirm("Permanently delete?")) return;
-        db[currentType].splice(idx, 1);
-        save();
-        renderList();
+    function saveTranslation() {
+        const code = document.getElementById('f-lang').value;
+        const text = document.getElementById('f-trans-text').value;
+        const item = db[currentType].find(i => i.id === currentEntryId);
+        
+        item.translations[code] = { text: text };
+        saveDB();
+        closeModals();
+        showEntry(currentEntryId);
     }
 
-    function checkAuth(role, action) {
-        if(currentUser === ADMIN_USER) {
-            action();
-        } else {
-            pendingAction = action;
-            document.getElementById('auth-modal').classList.add('active');
-        }
-    }
-
-    function handleLogin() {
-        const u = document.getElementById('auth-user').value;
-        const p = document.getElementById('auth-pass').value;
-        if(u === ADMIN_USER && p === ADMIN_PASS) {
-            currentUser = u;
-            document.getElementById('auth-modal').classList.remove('active');
-            if(pendingAction) pendingAction();
-        } else {
-            alert("Invalid credentials");
-        }
-    }
-
-    function closeAuth() { document.getElementById('auth-modal').classList.remove('active'); }
-    function closeModal() { document.getElementById('entry-modal').classList.remove('active'); }
-    
-    function updateCounts() {
-        document.getElementById('count-verdicts').textContent = `${db.verdicts.length} entries`;
-        document.getElementById('count-audio').textContent = `${db.audio.length} entries`;
-        document.getElementById('count-text').textContent = `${db.text.length} entries`;
+    function closeModals() {
+        document.querySelectorAll('.overlay').forEach(o => o.classList.remove('active'));
     }
 
     updateCounts();
