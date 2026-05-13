@@ -11,280 +11,423 @@
             --green-mid: #2d5c47; --rust: #8b3a1a; --border: rgba(184,134,11,.25);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: Georgia, serif; background: var(--cream); color: var(--ink); min-height: 100vh; padding: 20px; }
+        body { font-family: Georgia, serif; background: var(--cream); color: var(--ink); min-height: 100vh; padding: 20px; line-height: 1.5; }
         
-        .container { max-width: 800px; margin: 0 auto; }
+        .container { max-width: 900px; margin: 0 auto; position: relative; }
+        
+        /* Top Navigation Bar */
+        .top-nav { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 20px; }
+        .user-status { font-size: 0.8rem; margin-right: auto; align-self: center; color: var(--green-mid); font-weight: bold; }
+
         .page { display: none; }
         .page.active { display: block; }
         
-        /* Typography */
-        h1 { font-size: 3rem; color: var(--green); text-align: center; margin-bottom: 0.5rem; }
-        h1 span { color: var(--gold); display: block; font-size: 0.7em; }
-        .divider { width: 100px; height: 2px; background: var(--gold); margin: 20px auto; opacity: 0.3; }
+        h1 { font-size: 3.5rem; color: var(--green); text-align: center; margin-bottom: 0.5rem; }
+        h1 span { color: var(--gold); display: block; font-size: 0.6em; margin-top: 5px; }
+        .divider { width: 120px; height: 2px; background: var(--gold); margin: 25px auto; opacity: 0.4; }
 
-        /* Cards */
-        .card { background: var(--parchment); border: 1px solid var(--border); padding: 20px; border-radius: 6px; margin-bottom: 15px; position: relative; }
-        .entry-link { background: var(--parchment); padding: 15px; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 10px; cursor: pointer; color: var(--green); display: block; text-decoration: none; }
-        
+        /* Dashboard Cards */
+        .card { background: var(--parchment); border: 1px solid var(--border); padding: 25px; border-radius: 8px; margin-bottom: 20px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 8px var(--shadow); }
+        .card:hover { border-color: var(--gold); transform: translateY(-2px); }
+        .card h3 { color: var(--green); margin-bottom: 8px; }
+
+        /* List Items */
+        .entry-link { background: var(--parchment); padding: 18px; border: 1px solid var(--border); border-radius: 5px; margin-bottom: 12px; cursor: pointer; color: var(--green); font-weight: bold; display: block; transition: 0.2s; }
+        .entry-link:hover { border-color: var(--gold); background: #fdfaf0; padding-left: 25px; }
+
         /* Buttons */
-        .btn { padding: 8px 16px; cursor: pointer; border-radius: 4px; font-family: inherit; transition: 0.2s; font-size: 0.9rem; }
-        .btn-solid { background: var(--green); color: white; border: none; }
+        .btn { padding: 10px 20px; cursor: pointer; border-radius: 4px; font-family: inherit; transition: 0.2s; font-size: 0.9rem; font-weight: bold; border: none; }
+        .btn-solid { background: var(--green); color: white; }
         .btn-outline { background: none; border: 1px solid var(--green); color: var(--green); }
-        .btn-danger { color: var(--rust); border: 1px solid var(--rust); background: none; }
-
-        /* Forms */
-        input, textarea, select { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid var(--border); background: white; font-family: inherit; }
-        label { font-size: 0.8rem; text-transform: uppercase; color: var(--green-mid); font-weight: bold; }
+        .btn-danger { background: none; border: 1px solid var(--rust); color: var(--rust); }
+        .btn:hover { opacity: 0.8; }
 
         /* Modals */
-        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
         .overlay.active { display: flex; }
-        .modal { background: var(--cream); padding: 25px; border-radius: 5px; width: 100%; max-width: 500px; }
+        .modal { background: var(--cream); padding: 30px; border-radius: 8px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
 
-        .arabic { font-size: 1.4rem; direction: rtl; text-align: right; line-height: 2; margin: 10px 0; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-        .english-box { background: rgba(184,134,11,0.05); padding: 15px; border-left: 3px solid var(--gold-lt); margin: 10px 0; }
+        /* Inputs */
+        input, textarea, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid var(--border); border-radius: 4px; font-family: inherit; font-size: 1rem; }
+        label { font-size: 0.75rem; text-transform: uppercase; color: var(--green-mid); font-weight: bold; letter-spacing: 0.05em; }
+
+        /* Content Display */
+        .arabic { font-size: 1.8rem; direction: rtl; text-align: right; line-height: 2.2; margin: 20px 0; padding: 15px; background: white; border-radius: 4px; border-right: 5px solid var(--gold); }
+        .translation-display { font-size: 1.2rem; padding: 20px; background: rgba(184,134,11,0.05); border-left: 5px solid var(--gold-lt); margin-top: 10px; }
+        .meta-info { font-size: 0.9rem; color: var(--green-mid); margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- HOME PAGE -->
+    <div class="top-nav">
+        <div id="user-display" class="user-status">Guest Mode</div>
+        <button class="btn btn-outline" id="btn-admin-login" onclick="openAuthModal('admin')">Admin</button>
+        <button class="btn btn-outline" id="btn-contributor-login" onclick="openAuthModal('contributor')">Contributor</button>
+        <button class="btn btn-danger" id="btn-logout" style="display:none;" onclick="logout()">Logout</button>
+    </div>
+
+    <!-- PAGE: HOME -->
     <div id="page-home" class="page active">
         <h1>Benefits <span>فوائد</span></h1>
         <div class="divider"></div>
-        <div id="counts" style="text-align: center; margin-bottom: 20px; color: var(--green-mid);"></div>
-        
-        <div class="card" onclick="showList('verdicts')"><h3>Verdicts</h3><p>Click to browse</p></div>
-        <div class="card" onclick="showList('audio')"><h3>Lecture Bits</h3><p>Click to browse</p></div>
-        <div class="card" onclick="showList('text')"><h3>Text Benefits</h3><p>Click to browse</p></div>
-        <div class="card" onclick="showLanguages()" style="border: 1px solid var(--gold)"><h3>Browse by Language</h3></div>
+        <div class="card" onclick="showCategory('verdicts')"><h3>Verdicts</h3><p>General Islamic rulings and legal verdicts.</p></div>
+        <div class="card" onclick="showCategory('audio')"><h3>Lecture Bits</h3><p>Extracted benefits from various lectures.</p></div>
+        <div class="card" onclick="showCategory('text')"><h3>Text Benefits</h3><p>Benefits from books, articles, and transcripts.</p></div>
+        <div class="card" onclick="showLanguagePortal()" style="border: 2px solid var(--gold)"><h3>Browse by Language</h3><p>Access specific translations by language.</p></div>
     </div>
 
-    <!-- LIST PAGE -->
+    <!-- PAGE: CATEGORY LIST -->
     <div id="page-list" class="page">
-        <button class="btn btn-outline" onclick="showHome()">← Home</button>
+        <button class="btn btn-outline" onclick="goHome()">← Home</button>
         <h2 id="list-title" style="margin: 20px 0; color: var(--green);"></h2>
-        <button class="btn btn-solid" style="margin-bottom: 15px;" onclick="openAddEntryModal()">+ Add Main Entry (Admin)</button>
+        <div id="admin-actions" style="display:none; margin-bottom: 20px;">
+            <button class="btn btn-solid" onclick="openEntryModal(false)">+ Add New Main Entry</button>
+        </div>
         <div id="list-content"></div>
     </div>
 
-    <!-- ENTRY VIEW PAGE -->
-    <div id="page-entry" class="page">
-        <button class="btn btn-outline" onclick="window.history.back()">← Back</button>
-        <div id="entry-content" style="margin-top:20px;"></div>
+    <!-- PAGE: LANGUAGE PORTAL -->
+    <div id="page-lang-menu" class="page">
+        <button class="btn btn-outline" onclick="goHome()">← Home</button>
+        <h2 style="margin: 20px 0;">Select Language</h2>
+        <div id="lang-menu-content"></div>
+    </div>
+
+    <!-- PAGE: LANGUAGE SPECIFIC LIST -->
+    <div id="page-lang-list" class="page">
+        <button class="btn btn-outline" onclick="showLanguagePortal()">← Back to Languages</button>
+        <h2 id="lang-list-title" style="margin: 20px 0; color: var(--gold);"></h2>
+        <div id="lang-list-content"></div>
+    </div>
+
+    <!-- PAGE: ENTRY VIEW -->
+    <div id="page-view" class="page">
+        <button class="btn btn-outline" onclick="handleBackFromView()">← Back</button>
+        <div id="view-content" style="margin-top:25px;"></div>
     </div>
 </div>
 
-<!-- MODALS -->
+<!-- MODAL: AUTHENTICATION -->
 <div id="modal-auth" class="overlay">
     <div class="modal">
-        <h3>Login Required</h3>
-        <input type="text" id="login-user" placeholder="Username">
-        <input type="password" id="login-pass" placeholder="Password">
-        <button class="btn btn-solid" onclick="attemptLogin()">Login</button>
-        <button class="btn btn-outline" onclick="closeModals()">Cancel</button>
+        <h3 id="auth-modal-title">Login</h3>
+        <input type="text" id="auth-user" placeholder="Username">
+        <input type="password" id="auth-pass" placeholder="Password">
+        <p id="auth-error" style="color:var(--rust); font-size: 0.8rem; display:none; margin-top:-5px; margin-bottom:10px;">Incorrect credentials.</p>
+        <button class="btn btn-solid" style="width:100%" onclick="processLogin()">Login</button>
+        <button class="btn btn-outline" style="width:100%; margin-top:10px;" onclick="closeModals()">Cancel</button>
     </div>
 </div>
 
+<!-- MODAL: MAIN ENTRY (ADMIN) -->
 <div id="modal-entry" class="overlay">
     <div class="modal">
-        <h3 id="entry-modal-title">Add Entry</h3>
-        <label>Title</label><input type="text" id="f-title">
-        <label>Scholar</label><input type="text" id="f-scholar">
-        <label>Arabic Text</label><textarea id="f-arabic" rows="3"></textarea>
-        <label>English Translation</label><textarea id="f-english" rows="3"></textarea>
-        <button class="btn btn-solid" onclick="saveEntry()">Save</button>
-        <button class="btn btn-outline" onclick="closeModals()">Cancel</button>
+        <h3 id="entry-modal-title">Add Main Entry</h3>
+        <label>Internal Title (English)</label><input type="text" id="f-title">
+        <label>Scholar / Source</label><input type="text" id="f-scholar">
+        <label>Arabic Source Text</label><textarea id="f-arabic" rows="5" dir="rtl"></textarea>
+        <label>English Base Translation</label><textarea id="f-english" rows="3"></textarea>
+        <button class="btn btn-solid" style="width:100%" onclick="saveEntry()">Save Main Entry</button>
+        <button class="btn btn-outline" style="width:100%; margin-top:10px;" onclick="closeModals()">Cancel</button>
     </div>
 </div>
 
+<!-- MODAL: TRANSLATION (CONTRIBUTOR) -->
 <div id="modal-trans" class="overlay">
     <div class="modal">
-        <h3>Add/Edit Translation</h3>
-        <label>Language</label>
-        <select id="f-lang">
-            <option value="ur">Urdu (اردو)</option>
-            <option value="bn">Bengali (বাংলা)</option>
-            <option value="sw">Swahili (Kiswahili)</option>
-            <option value="ar">Arabic (العربية)</option>
-            <option value="fr">French (Français)</option>
-        </select>
-        <label>Translation Text</label>
-        <textarea id="f-trans-text" rows="5"></textarea>
-        <button class="btn btn-solid" onclick="saveTranslation()">Save Translation</button>
-        <button class="btn btn-outline" onclick="closeModals()">Cancel</button>
+        <h3>Submit Translation</h3>
+        <p style="font-size: 0.8rem; margin-bottom: 15px;">Contributing in: <b id="trans-lang-name"></b></p>
+        <label>Concise Title (In this language)</label><input type="text" id="f-trans-title">
+        <label>Translation Text</label><textarea id="f-trans-text" rows="8"></textarea>
+        <button class="btn btn-solid" style="width:100%" onclick="saveTranslation()">Save Translation</button>
+        <button class="btn btn-outline" style="width:100%; margin-top:10px;" onclick="closeModals()">Cancel</button>
     </div>
 </div>
 
 <script>
-    // Database Logic - Supports multiple versions to try and find your lost data
-    let db = JSON.parse(localStorage.getItem('fawaid_v1')) || 
-             JSON.parse(localStorage.getItem('ib_v4')) || 
-             JSON.parse(localStorage.getItem('ib_v3')) || 
-             { verdicts: [], audio: [], text: [] };
+    // 1. Data Initialization
+    let db = JSON.parse(localStorage.getItem('benefits_db_v3')) || { verdicts: [], audio: [], text: [] };
+    
+    const LANGUAGES = [
+        "Urdu", "Bengali", "Swahili", "Tigrinya", "Amharic", "Somali", "French", "Indonesian", 
+        "Malay", "Turkish", "Spanish", "Albanian", "Bosnian", "Hausa", "Yoruba"
+    ];
 
-    let currentType = '';
-    let currentEntryId = null;
-    let currentUser = null;
-    let pendingAction = null;
+    let session = {
+        user: null, // 'admin' or Language Name
+        role: 'guest',
+        currentCategory: null,
+        currentEntryId: null,
+        activeLangFilter: null,
+        authContext: null // what we are currently trying to log into
+    };
 
     function saveDB() {
-        localStorage.setItem('fawaid_v1', JSON.stringify(db));
-        updateCounts();
+        localStorage.setItem('benefits_db_v3', JSON.stringify(db));
     }
 
-    function updateCounts() {
-        document.getElementById('counts').innerText = 
-            `Verdicts: ${db.verdicts.length} | Bits: ${db.audio.length} | Text: ${db.text.length}`;
-    }
-
-    // Navigation
-    function showHome() {
+    // 2. Navigation
+    function showPage(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById('page-home').classList.add('active');
-        updateCounts();
+        document.getElementById(id).classList.add('active');
+        window.scrollTo(0,0);
     }
 
-    function showList(type) {
-        currentType = type;
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById('page-list').classList.add('active');
-        document.getElementById('list-title').innerText = type.toUpperCase();
-        
-        const content = document.getElementById('list-content');
-        content.innerHTML = '';
-        db[type].forEach(item => {
+    function goHome() { session.activeLangFilter = null; showPage('page-home'); }
+
+    function showCategory(cat) {
+        session.currentCategory = cat;
+        session.activeLangFilter = null;
+        document.getElementById('list-title').innerText = cat.toUpperCase();
+        document.getElementById('admin-actions').style.display = (session.role === 'admin') ? 'block' : 'none';
+        renderList();
+        showPage('page-list');
+    }
+
+    function renderList() {
+        const container = document.getElementById('list-content');
+        container.innerHTML = '';
+        const items = db[session.currentCategory];
+        items.forEach(item => {
             const div = document.createElement('div');
             div.className = 'entry-link';
-            div.innerText = item.title || 'Untitled';
-            div.onclick = () => showEntry(item.id);
-            content.appendChild(div);
+            div.innerText = item.title;
+            div.onclick = () => viewEntry(item.id);
+            container.appendChild(div);
         });
     }
 
-    function showEntry(id) {
-        currentEntryId = id;
-        const item = db[currentType].find(i => i.id === id);
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        const page = document.getElementById('page-entry');
-        page.classList.add('active');
-
-        let transHtml = '';
-        for (let code in item.translations) {
-            transHtml += `
-                <div class="card" style="margin-top:10px">
-                    <label>${code.toUpperCase()}</label>
-                    <p>${item.translations[code].text}</p>
-                    <button class="btn btn-outline" onclick="openTransModal('${code}')">Edit</button>
-                </div>`;
-        }
-
-        document.getElementById('entry-content').innerHTML = `
-            <div class="card">
-                <button class="btn btn-danger" style="float:right" onclick="deleteEntry('${id}')">Delete (Admin)</button>
-                <h2 style="color:var(--green)">${item.title}</h2>
-                <p><strong>Scholar:</strong> ${item.scholar}</p>
-                <div class="arabic">${item.arabic}</div>
-                <div class="english-box">${item.english}</div>
-                <button class="btn btn-solid" onclick="openTransModal()">+ Add Translation</button>
-            </div>
-            <h3>Translations</h3>
-            ${transHtml}
-        `;
-    }
-
-    // Auth
-    function openAddEntryModal() {
-        requireAuth('admin', () => {
-            document.getElementById('entry-modal-title').innerText = "Add " + currentType;
-            document.getElementById('modal-entry').classList.add('active');
+    function showLanguagePortal() {
+        const container = document.getElementById('lang-menu-content');
+        container.innerHTML = '';
+        LANGUAGES.sort().forEach(lang => {
+            const div = document.createElement('div');
+            div.className = 'entry-link';
+            div.innerText = lang;
+            div.onclick = () => showLanguageList(lang);
+            container.appendChild(div);
         });
+        showPage('page-lang-menu');
     }
 
-    function deleteEntry(id) {
-        requireAuth('admin', () => {
-            if(confirm("Permanently delete?")) {
-                db[currentType] = db[currentType].filter(i => i.id !== id);
-                saveDB();
-                showList(currentType);
+    function showLanguageList(lang) {
+        session.activeLangFilter = lang;
+        document.getElementById('lang-list-title').innerText = lang + " Portal";
+        const container = document.getElementById('lang-list-content');
+        container.innerHTML = '';
+
+        let count = 0;
+        ['verdicts', 'audio', 'text'].forEach(cat => {
+            db[cat].forEach(entry => {
+                if(entry.translations && entry.translations[lang]) {
+                    count++;
+                    const div = document.createElement('div');
+                    div.className = 'entry-link';
+                    div.innerText = entry.translations[lang].title || entry.title;
+                    div.onclick = () => viewEntry(entry.id, cat);
+                    container.appendChild(div);
+                }
+            });
+        });
+        if(count === 0) container.innerHTML = "<p style='text-align:center; opacity:0.5;'>No translations available for this language yet.</p>";
+        showPage('page-lang-list');
+    }
+
+    function viewEntry(id, catOverride = null) {
+        if(catOverride) session.currentCategory = catOverride;
+        session.currentEntryId = id;
+        const entry = db[session.currentCategory].find(e => e.id === id);
+        const container = document.getElementById('view-content');
+        
+        let html = "";
+        
+        if(session.activeLangFilter) {
+            // SPECIFIC LANGUAGE VIEW: Arabic + That Lang only
+            const trans = entry.translations[session.activeLangFilter];
+            html = `
+                <div class="meta-info">Scholar: ${entry.scholar}</div>
+                <div class="arabic">${entry.arabic}</div>
+                <div style="font-weight:bold; color:var(--gold); margin-top:30px;">${session.activeLangFilter} Translation:</div>
+                <div class="translation-display">${trans.text}</div>
+            `;
+        } else {
+            // ADMIN/GENERAL VIEW: Everything
+            let transList = '';
+            for(let l in entry.translations) {
+                transList += `
+                    <div class="card" style="cursor:default; margin-top:15px;">
+                        <b style="color:var(--gold)">${l}:</b> ${entry.translations[l].title}
+                        <p style="margin-top:10px; font-size:1rem;">${entry.translations[l].text}</p>
+                        ${(session.role === 'admin' || session.user === l) ? `<button class="btn btn-outline" style="margin-top:10px;" onclick="openTransModal('${l}')">Edit</button>` : ''}
+                    </div>
+                `;
             }
-        });
+
+            html = `
+                <div class="card" style="cursor:default">
+                    <h2 style="color:var(--green)">${entry.title}</h2>
+                    <div class="meta-info">Scholar: ${entry.scholar}</div>
+                    <div class="arabic">${entry.arabic}</div>
+                    <div class="translation-display"><b style="font-size:0.8rem; color:var(--green-mid)">BASE ENGLISH:</b><br>${entry.english}</div>
+                    <div style="margin-top:20px;">
+                        <button class="btn btn-solid" onclick="openTransModal()">+ Add Translation</button>
+                        ${(session.role === 'admin') ? `
+                            <button class="btn btn-outline" onclick="openEntryModal(true)">Edit Main</button>
+                            <button class="btn btn-danger" onclick="deleteEntry()">Delete Entire Entry</button>
+                        ` : ''}
+                    </div>
+                </div>
+                <h3>All Translations</h3>
+                ${transList || '<p style="opacity:0.5; margin-top:10px;">No translations yet.</p>'}
+            `;
+        }
+
+        container.innerHTML = html;
+        showPage('page-view');
     }
 
-    function requireAuth(role, action) {
-        if (currentUser === role || (role === 'any')) {
-            action();
+    function handleBackFromView() {
+        if(session.activeLangFilter) showLanguageList(session.activeLangFilter);
+        else showCategory(session.currentCategory);
+    }
+
+    // 3. Authentication Logic
+    function openAuthModal(context) {
+        session.authContext = context;
+        document.getElementById('auth-modal-title').innerText = (context === 'admin') ? "Admin Access" : "Contributor Access";
+        document.getElementById('auth-user').placeholder = (context === 'admin') ? "Admin Username" : "Language Name (e.g., Urdu)";
+        document.getElementById('auth-error').style.display = 'none';
+        document.getElementById('modal-auth').classList.add('active');
+    }
+
+    function processLogin() {
+        const u = document.getElementById('auth-user').value.trim();
+        const p = document.getElementById('auth-pass').value.trim();
+
+        if(session.authContext === 'admin') {
+            if(u.toLowerCase() === 'admin' && p === 'Nael2026') {
+                setSession('admin', 'admin');
+                closeModals();
+            } else { showAuthError(); }
         } else {
-            pendingAction = { role, action };
-            document.getElementById('modal-auth').classList.add('active');
+            // Contributor Check
+            const validLang = LANGUAGES.find(l => l.toLowerCase() === u.toLowerCase());
+            if(validLang && p === (validLang + "1447")) {
+                setSession(validLang, 'contributor');
+                closeModals();
+            } else { showAuthError(); }
         }
     }
 
-    function attemptLogin() {
-        const u = document.getElementById('login-user').value.toLowerCase();
-        const p = document.getElementById('login-pass').value;
-
-        if (u === 'admin' && p === 'Nael2026') {
-            currentUser = 'admin';
-            document.getElementById('modal-auth').classList.remove('active');
-            if (pendingAction) pendingAction.action();
-        } else if (u && p === (u + "1447")) {
-            currentUser = u;
-            document.getElementById('modal-auth').classList.remove('active');
-            if (pendingAction) pendingAction.action();
-        } else {
-            alert("Wrong credentials");
-        }
+    function setSession(user, role) {
+        session.user = user;
+        session.role = role;
+        document.getElementById('user-display').innerText = (role === 'admin') ? "ADMIN MODE" : "Contributor: " + user;
+        document.getElementById('btn-admin-login').style.display = 'none';
+        document.getElementById('btn-contributor-login').style.display = 'none';
+        document.getElementById('btn-logout').style.display = 'block';
+        if(document.getElementById('page-list').classList.contains('active')) renderList(); 
     }
 
-    // Modal Actions
+    function logout() {
+        session.user = null;
+        session.role = 'guest';
+        document.getElementById('user-display').innerText = "Guest Mode";
+        document.getElementById('btn-admin-login').style.display = 'block';
+        document.getElementById('btn-contributor-login').style.display = 'block';
+        document.getElementById('btn-logout').style.display = 'none';
+        goHome();
+    }
+
+    function showAuthError() { document.getElementById('auth-error').style.display = 'block'; }
+
+    // 4. Modals and CRUD
+    function openEntryModal(isEdit) {
+        document.getElementById('entry-modal-title').innerText = isEdit ? "Edit Main Entry" : "Add Main Entry";
+        if(isEdit) {
+            const entry = db[session.currentCategory].find(e => e.id === session.currentEntryId);
+            document.getElementById('f-title').value = entry.title;
+            document.getElementById('f-scholar').value = entry.scholar;
+            document.getElementById('f-arabic').value = entry.arabic;
+            document.getElementById('f-english').value = entry.english;
+        } else {
+            document.getElementById('f-title').value = '';
+            document.getElementById('f-scholar').value = '';
+            document.getElementById('f-arabic').value = '';
+            document.getElementById('f-english').value = '';
+        }
+        document.getElementById('modal-entry').classList.add('active');
+    }
+
     function saveEntry() {
-        const newItem = {
-            id: Date.now().toString(),
-            title: document.getElementById('f-title').value,
-            scholar: document.getElementById('f-scholar').value,
-            arabic: document.getElementById('f-arabic').value,
-            english: document.getElementById('f-english').value,
-            translations: {}
+        const data = {
+            id: session.currentEntryId || Date.now().toString(),
+            title: document.getElementById('f-title').value.trim(),
+            scholar: document.getElementById('f-scholar').value.trim(),
+            arabic: document.getElementById('f-arabic').value.trim(),
+            english: document.getElementById('f-english').value.trim(),
+            translations: (session.currentEntryId) ? db[session.currentCategory].find(e => e.id === session.currentEntryId).translations : {}
         };
-        db[currentType].push(newItem);
+
+        if(!data.title || !data.arabic) return alert("Title and Arabic required.");
+
+        if(session.currentEntryId) {
+            const idx = db[session.currentCategory].findIndex(e => e.id === session.currentEntryId);
+            db[session.currentCategory][idx] = data;
+        } else {
+            db[session.currentCategory].unshift(data);
+        }
+        
         saveDB();
         closeModals();
-        showList(currentType);
+        renderList();
+        if(session.currentEntryId) viewEntry(data.id);
     }
 
-    function openTransModal(existingCode = null) {
-        // Translations do not require a login unless editing an existing one? 
-        // Based on your request: Only Admin needs password. Contributors use Language + 1447.
-        // Let's set it so adding a translation asks for your Language login.
-        requireAuth('any', () => {
-            if (existingCode) {
-                const item = db[currentType].find(i => i.id === currentEntryId);
-                document.getElementById('f-lang').value = existingCode;
-                document.getElementById('f-trans-text').value = item.translations[existingCode].text;
-            } else {
-                document.getElementById('f-trans-text').value = '';
-            }
-            document.getElementById('modal-trans').classList.add('active');
-        });
+    function deleteEntry() {
+        if(!confirm("Delete this entry and ALL translations?")) return;
+        db[session.currentCategory] = db[session.currentCategory].filter(e => e.id !== session.currentEntryId);
+        saveDB();
+        showCategory(session.currentCategory);
+    }
+
+    function openTransModal(editLang = null) {
+        if(session.role === 'guest') return openAuthModal('contributor');
+        
+        const targetLang = editLang || session.user;
+        if(session.role !== 'admin' && targetLang !== session.user) return alert("You can only edit " + session.user + " translations.");
+
+        document.getElementById('trans-lang-name').innerText = targetLang;
+        const entry = db[session.currentCategory].find(e => e.id === session.currentEntryId);
+        
+        if(entry.translations && entry.translations[targetLang]) {
+            document.getElementById('f-trans-title').value = entry.translations[targetLang].title;
+            document.getElementById('f-trans-text').value = entry.translations[targetLang].text;
+        } else {
+            document.getElementById('f-trans-title').value = '';
+            document.getElementById('f-trans-text').value = '';
+        }
+        document.getElementById('modal-trans').classList.add('active');
     }
 
     function saveTranslation() {
-        const code = document.getElementById('f-lang').value;
-        const text = document.getElementById('f-trans-text').value;
-        const item = db[currentType].find(i => i.id === currentEntryId);
-        
-        item.translations[code] = { text: text };
+        const lang = document.getElementById('trans-lang-name').innerText;
+        const tTitle = document.getElementById('f-trans-title').value.trim();
+        const tText = document.getElementById('f-trans-text').value.trim();
+
+        if(!tTitle || !tText) return alert("Translation Title and Text required.");
+
+        const entry = db[session.currentCategory].find(e => e.id === session.currentEntryId);
+        if(!entry.translations) entry.translations = {};
+        entry.translations[lang] = { title: tTitle, text: tText };
+
         saveDB();
         closeModals();
-        showEntry(currentEntryId);
+        viewEntry(session.currentEntryId);
     }
 
-    function closeModals() {
-        document.querySelectorAll('.overlay').forEach(o => o.classList.remove('active'));
-    }
-
-    updateCounts();
+    function closeModals() { document.querySelectorAll('.overlay').forEach(o => o.classList.remove('active')); }
 </script>
 
 </body>
