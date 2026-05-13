@@ -1,553 +1,317 @@
-<!DOCTYPE html>
-
-<html lang="en" dir="ltr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>فوائد · Benefits</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Naskh+Arabic:wght@400;500;700&family=Noto+Sans:wght@400;500&family=Noto+Sans+Bengali:wght@400;500&family=Noto+Sans+Devanagari:wght@400;500&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
-<style>
-:root {
---ink:#1a1209; --parchment:#f5eed8; --cream:#faf6ec;
---gold:#b8860b; --gold-lt:#d4a843; --gold-pale:#f0e0a0;
---green:#1b3a2e; --green-mid:#2d5c47; --green-lt:#4a8c6f;
---rust:#8b3a1a; --border:rgba(184,134,11,.25); --shadow:rgba(26,18,9,.15);
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Cormorant Garamond',Georgia,serif;background:var(--cream);color:var(--ink);min-height:100vh;overflow-x:hidden}
-.page{display:none;position:relative;z-index:1;min-height:100vh}
-.page.active{display:block}
-#home{display:none;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1.5rem;text-align:center}
-#home.active{display:flex}
-.site-title{font-family:'Amiri',serif;font-size:clamp(3rem,9vw,5.5rem);font-weight:700;color:var(--green);line-height:1;margin-top:1.2rem}
-.site-title-ar{font-family:'Noto Naskh Arabic',serif;font-size:clamp(2rem,6vw,4rem);color:var(--gold);display:block;margin-top:.3rem}
-.divider{width:160px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:2rem auto}
-.home-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;max-width:1000px;width:100%;margin-top:.5rem}
-.home-card{background:var(--parchment);border:1px solid var(--border);border-radius:6px;padding:1.5rem;box-shadow:0 2px 12px var(--shadow);transition:transform 0.3s}
-.home-card:hover{transform:translateY(-4px)}
-.card-title{font-size:1.3rem;font-weight:600;color:var(--green)}
-.card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:1.3rem}
-.btn-browse,.btn-add-card,.save-btn{font-family:'Cormorant Garamond',serif;padding:.4rem 1rem;cursor:pointer;border-radius:3px;transition:0.2s}
-.btn-browse{background:none;border:1px solid var(--green);color:var(--green);font-size:1rem}
-.btn-add-card,.save-btn{background:var(--green);border:none;color:var(--gold-pale);font-size:1rem}
-.btn-browse:hover{background:var(--green);color:var(--gold-pale)}
-.entry-link{display:block;background:var(--parchment);padding:1.2rem;margin-bottom:0.8rem;border:1px solid var(--border);border-radius:4px;text-decoration:none;color:var(--green);transition:0.2s;cursor:pointer}
-.entry-link:hover{border-color:var(--gold);transform:translateX(5px)}
-
-/* Auth overlay */
-#auth-overlay{display:none;position:fixed;inset:0;background:rgba(26,18,9,0.85);z-index:1000;align-items:center;justify-content:center}
-#auth-overlay.open{display:flex}
-.auth-box{background:var(–parchment);padding:2rem;border-radius:4px;width:320px;border:1px solid var(–gold)}
-.auth-box h3{margin-bottom:1rem;color:var(–green);font-family:‘Amiri’,serif;font-size:1.4rem}
-.auth-box input{width:100%;padding:0.8rem;margin:0.5rem 0;border:1px solid var(–border);background:var(–cream);font-family:‘Cormorant Garamond’,serif;font-size:1rem}
-.auth-error{color:var(–rust);font-size:.9rem;margin-top:.5rem;min-height:1.2rem}
-
-.inner-page{max-width:920px;margin:0 auto;padding:2rem 1.5rem 5rem}
-.page-header{padding:2.5rem 0 1.8rem;text-align:center;position:relative}
-.back-btn{position:absolute;top:2.5rem;left:0;background:none;border:1px solid var(–border);padding:.4rem 1rem;cursor:pointer;font-family:‘Cormorant Garamond’,serif;font-size:1rem}
-.back-btn:hover{background:var(–parchment)}
-
-/* Modal */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(26,18,9,.65);z-index:200;align-items:center;justify-content:center}
-.modal-overlay.open{display:flex}
-.modal{background:var(–cream);padding:2.2rem;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;position:relative;border:1px solid var(–border)}
-.field{margin-bottom:1rem}
-.field label{display:block;font-size:.76rem;text-transform:uppercase;margin-bottom:.3rem;color:var(–green-mid);letter-spacing:.05em}
-.field input,.field textarea,.field select{width:100%;background:var(–parchment);border:1px solid var(–border);padding:.55rem .85rem;font-family:‘Cormorant Garamond’,serif;font-size:1rem}
-.field textarea{min-height:100px;resize:vertical}
-
-/* Benefit card */
-.benefit-card{background:var(–parchment);border:1px solid var(–border);border-radius:4px;position:relative;margin-top:1rem}
-.card-main{padding:1.6rem 2rem 1.3rem}
-.source-highlight{color:var(–gold);font-size:1.1rem;font-weight:700;margin-bottom:0.5rem;font-style:italic;display:block;border-left:3px solid var(–gold);padding-left:10px}
-.english-translation-box{font-size:1.05rem;color:var(–ink);line-height:1.7;margin-bottom:1.5rem;padding:1rem;background:rgba(184,134,11,0.05);border-radius:4px;border-left:2px solid var(–gold-lt)}
-.arabic-text{font-family:‘Noto Naskh Arabic’,serif;font-size:1.3rem;line-height:2.2;text-align:right;direction:rtl;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(–border)}
-.trans-panel{border-top:1px solid var(–border)}
-.trans-header{display:flex;align-items:center;gap:.8rem;padding:.5rem 1rem;background:rgba(27,58,46,.05);flex-wrap:wrap}
-.lang-tab{padding:.2rem .6rem;cursor:pointer;border:1px solid var(–border);font-size:.8rem;border-radius:15px;background:var(–cream);transition:0.2s}
-.lang-tab:hover{border-color:var(–gold)}
-.lang-tab.active{background:var(–green);color:white;border-color:var(–green)}
-.lang-pane{display:none;padding:1rem}
-.lang-pane.active{display:block}
-.trans-text{font-size:1.05rem;line-height:1.8}
-.trans-text.rtl{direction:rtl;text-align:right;font-family:‘Noto Naskh Arabic’,serif;font-size:1.2rem}
-
-/* Language view — clean single-translation display */
-.lang-entry-card{background:var(–parchment);border:1px solid var(–border);border-radius:4px;margin-bottom:1.5rem;padding:1.5rem 2rem}
-.lang-entry-card .source-highlight{color:var(–gold);font-style:italic;border-left:3px solid var(–gold);padding-left:10px;margin-bottom:1rem;display:block}
-.lang-entry-card .arabic-text{font-family:‘Noto Naskh Arabic’,serif;font-size:1.25rem;line-height:2.1;text-align:right;direction:rtl;padding-bottom:1rem;margin-bottom:1rem;border-bottom:1px solid var(–border)}
-.lang-entry-card .trans-body{font-size:1.1rem;line-height:1.8}
-.lang-entry-card .trans-body.rtl{direction:rtl;text-align:right;font-family:‘Noto Naskh Arabic’,serif;font-size:1.2rem}
-.category-badge{display:inline-block;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;padding:.2rem .6rem;border-radius:10px;margin-bottom:.8rem;background:rgba(27,58,46,.1);color:var(–green-mid)}
-
-.del-btn{position:absolute;top:1rem;right:1rem;background:none;border:1px solid rgba(139,58,26,.3);color:var(–rust);cursor:pointer;padding:.2rem .5rem;border-radius:3px;font-size:.85rem}
-.del-btn:hover{background:var(–rust);color:white}
-.edit-btn{background:none;border:1px solid var(–border);padding:.3rem .8rem;cursor:pointer;font-family:‘Cormorant Garamond’,serif;font-size:.9rem;margin-top:.8rem}
-.edit-btn:hover{background:var(–parchment)}
-
-.page-title{font-family:‘Amiri’,serif;font-size:1.8rem;color:var(–green)}
-.empty-state{text-align:center;padding:3rem;color:var(–green-mid);font-style:italic}
-</style>
-
-</head>
-<body>
-
-<!-- AUTH OVERLAY -->
-
-<div id="auth-overlay">
-<div class="auth-box">
-<h3>Contributor Login</h3>
-<input type="text" id="auth-user" placeholder="Username (e.g. admin, Urdu)">
-<input type="password" id="auth-pass" placeholder="Password">
-<div class="auth-error" id="auth-error"></div>
-<button class="save-btn" style="width:100%;margin-top:.5rem" onclick="doLogin()">Login</button>
-<button class="btn-browse" style="width:100%;margin-top:.5rem" onclick="cancelAuth()">Cancel</button>
-</div>
-</div>
-
-<!-- HOME PAGE -->
-
-<div id="home" class="page active">
-<h1 class="site-title">Benefits<span class="site-title-ar">فوائد</span></h1>
-<p style="font-style:italic;color:var(--green-mid)">A treasury of Islamic knowledge &amp; verdicts</p>
-<div class="divider"></div>
-<div class="home-cards">
-<div class="home-card">
-<div class="card-title">Verdicts ⚖️</div>
-<div class="card-footer"><span id="cnt-verdicts">0</span><button class="btn-browse" onclick="navigate('verdicts')">Browse</button></div>
-</div>
-<div class="home-card">
-<div class="card-title">Lecture Bits 📹</div>
-<div class="card-footer"><span id="cnt-audio">0</span><button class="btn-browse" onclick="navigate('audio')">Browse</button></div>
-</div>
-<div class="home-card">
-<div class="card-title">Text Benefits 📜</div>
-<div class="card-footer"><span id="cnt-text">0</span><button class="btn-browse" onclick="navigate('text')">Browse</button></div>
-</div>
-<div class="home-card" style="border:1px solid var(--gold)">
-<div class="card-title">Browse by Language 🌍</div>
-<div class="card-footer"><span>Find</span><button class="btn-browse" onclick="navigate('languages')">Enter</button></div>
-</div>
-</div>
-</div>
-
-<!-- INNER PAGE -->
-
-<div id="inner-container" class="page">
-<div class="inner-page">
-<div class="page-header">
-<button class="back-btn" onclick="goHome()">← Home</button>
-<h2 id="inner-title" class="page-title"></h2>
-</div>
-<div id="list-view"></div>
-<div id="single-view" style="display:none"></div>
-</div>
-</div>
-
-<!-- ENTRY/EDIT MODAL -->
-
-<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
-<div class="modal">
-<button style="position:absolute;top:1rem;right:1rem;cursor:pointer;background:none;border:none;font-size:1.2rem" onclick="closeModal()">✕</button>
-<h3 id="modal-title" style="margin-bottom:1.5rem;font-family:'Amiri',serif;color:var(--green)"></h3>
-<div id="modal-body"></div>
-</div>
-</div>
-
-<script>
 // ─── Constants ────────────────────────────────────────────────────────────────
 const ADMIN_USER = 'admin';
 const ADMIN_PASS = 'Nael2026';
-const LANG_PASS_SUFFIX = '1447'; // e.g. "Urdu1447"
+const LANG_PASS_SUFFIX = '1447'; 
 
 const LANGS = [
-{code:'af',name:'Afrikaans',native:'Afrikaans',rtl:false},
-{code:'am',name:'Amharic',native:'አማርኛ',rtl:false},
-{code:'ar',name:'Arabic',native:'العربية',rtl:true},
-{code:'bn',name:'Bengali',native:'বাংলা',rtl:false},
-{code:'en',name:'English',native:'English',rtl:false},
-{code:'fr',name:'French',native:'Français',rtl:false},
-{code:'id',name:'Indonesian',native:'Bahasa Indonesia',rtl:false},
-{code:'ms',name:'Malay',native:'Bahasa Melayu',rtl:false},
-{code:'so',name:'Somali',native:'Soomaali',rtl:false},
-{code:'sw',name:'Swahili',native:'Kiswahili',rtl:false},
-{code:'ti',name:'Tigrinya',native:'ትግርኛ',rtl:false},
-{code:'tr',name:'Turkish',native:'Türkçe',rtl:false},
-{code:'ur',name:'Urdu',native:'اردو',rtl:true}
+    {code:'af',name:'Afrikaans',native:'Afrikaans',rtl:false},
+    {code:'am',name:'Amharic',native:'አማርኛ',rtl:false},
+    {code:'ar',name:'Arabic',native:'العربية',rtl:true},
+    {code:'bn',name:'Bengali',native:'বাংলা',rtl:false},
+    {code:'en',name:'English',native:'English',rtl:false},
+    {code:'fr',name:'French',native:'Français',rtl:false},
+    {code:'id',name:'Indonesian',native:'Bahasa Indonesia',rtl:false},
+    {code:'ms',name:'Malay',native:'Bahasa Melayu',rtl:false},
+    {code:'so',name:'Somali',native:'Soomaali',rtl:false},
+    {code:'sw',name:'Swahili',native:'Kiswahili',rtl:false},
+    {code:'ti',name:'Tigrinya',native:'ትግርኛ',rtl:false},
+    {code:'tr',name:'Turkish',native:'Türkçe',rtl:false},
+    {code:'ur',name:'Urdu',native:'اردو',rtl:true}
 ];
 
 // ─── State ────────────────────────────────────────────────────────────────────
-let currentUser = null; // null = guest (browse only)
-let pendingAction = null; // function to call after successful auth
+let currentUser = null; 
+let pendingAction = null; 
 let curType = '';
 let currentLangCode = '';
 
 // ─── Data persistence ─────────────────────────────────────────────────────────
 function load() {
-try { return JSON.parse(localStorage.getItem('ib_v3')) || {verdicts:[],audio:[],text:[]}; }
-catch(e) { return {verdicts:[],audio:[],text:[]}; }
+    try { return JSON.parse(localStorage.getItem('ib_v3')) || {verdicts:[],audio:[],text:[]}; }
+    catch(e) { return {verdicts:[],audio:[],text:[]}; }
 }
 function save(d) { localStorage.setItem('ib_v3', JSON.stringify(d)); }
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
-/**
-* Check if currentUser is allowed for the required role.
-* role = 'admin' → only admin
-* role = 'LangName' → admin or that exact language contributor
-* role = null/any → any logged-in user
-*/
 function isAuthorized(role) {
-if (!currentUser) return false;
-if (currentUser === ADMIN_USER) return true;
-if (!role || role === 'any') return true;
-// Language contributor: username must match the language name
-return currentUser.toLowerCase() === role.toLowerCase();
+    if (!currentUser) return false;
+    if (currentUser === ADMIN_USER) return true;
+    if (!role || role === 'any') return true;
+    return currentUser.toLowerCase() === role.toLowerCase();
 }
 
 function requireAuth(role, action) {
-if (isAuthorized(role)) {
-action();
-} else {
-pendingAction = {role, action};
-document.getElementById('auth-error').textContent = '';
-document.getElementById('auth-user').value = '';
-document.getElementById('auth-pass').value = '';
-document.getElementById('auth-overlay').classList.add('open');
-}
+    if (isAuthorized(role)) {
+        action();
+    } else {
+        pendingAction = {role, action};
+        document.getElementById('auth-error').textContent = '';
+        document.getElementById('auth-user').value = '';
+        document.getElementById('auth-pass').value = '';
+        document.getElementById('auth-overlay').classList.add('open');
+    }
 }
 
 function doLogin() {
-const user = document.getElementById('auth-user').value.trim();
-const pass = document.getElementById('auth-pass').value;
-let valid = false;
+    const user = document.getElementById('auth-user').value.trim();
+    const pass = document.getElementById('auth-pass').value;
+    let valid = false;
 
-if (user === ADMIN_USER && pass === ADMIN_PASS) {
-valid = true;
-} else if (user && pass === user + LANG_PASS_SUFFIX) {
-// Language contributor: username = language name, password = LanguageName1447
-valid = true;
-}
+    if (user === ADMIN_USER && pass === ADMIN_PASS) {
+        valid = true;
+    } else if (user && pass === user + LANG_PASS_SUFFIX) {
+        valid = true;
+    }
 
-if (valid) {
-currentUser = user;
-document.getElementById('auth-overlay').classList.remove('open');
-if (pendingAction) {
-const {role, action} = pendingAction;
-pendingAction = null;
-if (isAuthorized(role)) action();
-}
-} else {
-document.getElementById('auth-error').textContent = 'Incorrect credentials. Try again.';
-}
+    if (valid) {
+        currentUser = user;
+        document.getElementById('auth-overlay').classList.remove('open');
+        if (pendingAction) {
+            const {role, action} = pendingAction;
+            pendingAction = null;
+            if (isAuthorized(role)) action();
+        }
+    } else {
+        document.getElementById('auth-error').textContent = 'Incorrect credentials. Try again.';
+    }
 }
 
 function cancelAuth() {
-document.getElementById('auth-overlay').classList.remove('open');
-pendingAction = null;
+    document.getElementById('auth-overlay').classList.remove('open');
+    pendingAction = null;
 }
 
 // ─── Navigation ───────────────────────────────────────────────────────────────
 function navigate(type) {
-curType = type;
-document.getElementById('home').classList.remove('active');
-document.getElementById('inner-container').classList.add('active');
-const titles = {verdicts:'Verdicts أحكام', audio:'Lecture Bits مقتطفات', text:'Text Benefits فوائد', languages:'Browse by Language 🌍'};
-document.getElementById('inner-title').textContent = titles[type] || type;
-type === 'languages' ? renderLangList() : renderList(type);
+    curType = type;
+    document.getElementById('home').classList.remove('active');
+    document.getElementById('inner-container').classList.add('active');
+    const titles = {verdicts:'Verdicts أحكام', audio:'Lecture Bits مقتطفات', text:'Text Benefits فوائد', languages:'Browse by Language'};
+    document.getElementById('inner-title').textContent = titles[type] || type;
+    type === 'languages' ? renderLangList() : renderList(type);
 }
 
 function goHome() {
-document.getElementById('inner-container').classList.remove('active');
-document.getElementById('home').classList.add('active');
-updateCounts();
+    document.getElementById('inner-container').classList.remove('active');
+    document.getElementById('home').classList.add('active');
+    updateCounts();
 }
 
 // ─── List views ───────────────────────────────────────────────────────────────
 function renderList(type) {
-const items = load()[type] || [];
-const listEl = document.getElementById('list-view');
-document.getElementById('single-view').style.display = 'none';
-listEl.style.display = 'block';
+    const items = load()[type] || [];
+    const listEl = document.getElementById('list-view');
+    document.getElementById('single-view').style.display = 'none';
+    listEl.style.display = 'block';
 
-let html = `<button class="save-btn" style="margin-bottom:1.2rem" onclick="requireAuth('admin', () => openEntryModal('${type}', null))">+ Add New Entry</button>`;
+    let html = `<button class="save-btn" style="margin-bottom:1.2rem" onclick="requireAuth('admin', () => openEntryModal('${type}', null))">+ Add New Entry</button>`;
 
-if (items.length === 0) {
-html += `<div class="empty-state">No entries yet. Be the first to add one.</div>`;
-} else {
-html += items.map(it =>
-`<div class="entry-link" onclick="viewEntry('${type}','${it.id}')">${it.title || '(Untitled)'}</div>`
-).join('');
-}
-listEl.innerHTML = html;
+    if (items.length === 0) {
+        html += `<div class="empty-state">No entries yet. Be the first to add one.</div>`;
+    } else {
+        html += items.map(it =>
+            `<div class="entry-link" onclick="viewEntry('${type}','${it.id}')">${it.title || '(Untitled)'}</div>`
+        ).join('');
+    }
+    listEl.innerHTML = html;
 }
 
 function renderLangList() {
-const d = load();
-const listEl = document.getElementById('list-view');
-document.getElementById('single-view').style.display = 'none';
-listEl.style.display = 'block';
+    const d = load();
+    const listEl = document.getElementById('list-view');
+    document.getElementById('single-view').style.display = 'none';
+    listEl.style.display = 'block';
 
-// Only show languages that actually have at least one translation
-const usedCodes = new Set();
-['verdicts','audio','text'].forEach(type => {
-(d[type] || []).forEach(it => {
-Object.keys(it.translations || {}).forEach(code => usedCodes.add(code));
-});
-});
+    const usedCodes = new Set();
+    ['verdicts','audio','text'].forEach(type => {
+        (d[type] || []).forEach(it => {
+            Object.keys(it.translations || {}).forEach(code => usedCodes.add(code));
+        });
+    });
 
-// Always show all languages, but mark ones with content
-let html = '';
-LANGS.forEach(l => {
-const hasContent = usedCodes.has(l.code);
-html += `<div class="entry-link ${hasContent ? '' : 'style="opacity:.5"'}" onclick="viewByLanguage('${l.code}')">
-${l.native} <span style="font-size:.8rem;color:var(--green-mid);margin-left:.5rem">${l.name}</span>
-${hasContent ? '' : '<span style="font-size:.75rem;color:var(--gold);float:right">no content yet</span>'}
-</div>`;
-});
-
-listEl.innerHTML = html || '<div class="empty-state">No translations added yet.</div>';
+    let html = '';
+    LANGS.forEach(l => {
+        const hasContent = usedCodes.has(l.code);
+        html += `<div class="entry-link" style="${hasContent ? '' : 'opacity:.5'}" onclick="viewByLanguage('${l.code}')">
+        ${l.native} <span style="font-size:.8rem;color:var(--green-mid);margin-left:.5rem">${l.name}</span>
+        ${hasContent ? '' : '<span style="font-size:.75rem;color:var(--gold);float:right">no content yet</span>'}
+        </div>`;
+    });
+    listEl.innerHTML = html || '<div class="empty-state">No translations added yet.</div>';
 }
 
-/**
-* Language browsing: shows Arabic source + ONLY the chosen language translation.
-* No other language tabs are shown here.
-*/
 function viewByLanguage(langCode) {
-currentLangCode = langCode;
-const d = load();
-const l = LANGS.find(lx => lx.code === langCode) || {name: langCode, native: langCode, rtl: false};
-document.getElementById('inner-title').textContent = l.native + ' · ' + l.name;
+    currentLangCode = langCode;
+    const d = load();
+    const l = LANGS.find(lx => lx.code === langCode) || {name: langCode, native: langCode, rtl: false};
+    document.getElementById('inner-title').textContent = l.native + ' · ' + l.name;
 
-const listEl = document.getElementById('list-view');
-document.getElementById('single-view').style.display = 'none';
-listEl.style.display = 'block';
+    const listEl = document.getElementById('list-view');
+    document.getElementById('single-view').style.display = 'none';
+    listEl.style.display = 'block';
 
-// Gather all entries that have this language's translation
-const results = [];
-['verdicts','audio','text'].forEach(type => {
-(d[type] || []).forEach(it => {
-if (it.translations && it.translations[langCode]) {
-results.push({...it, _type: type});
-}
-});
-});
+    const results = [];
+    ['verdicts','audio','text'].forEach(type => {
+        (d[type] || []).forEach(it => {
+            if (it.translations && it.translations[langCode]) {
+                results.push({...it, _type: type});
+            }
+        });
+    });
 
-const backBtn = `<div style="margin-bottom:1rem"><button class="back-btn" style="position:static" onclick="navigate('languages')">← Languages</button></div>`;
+    const backBtn = `<div style="margin-bottom:1rem"><button class="back-btn" style="position:static" onclick="navigate('languages')">← Languages</button></div>`;
 
-if (results.length === 0) {
-listEl.innerHTML = backBtn + `<div class="empty-state">No content available in ${l.name} yet.<br><br>
-<button class="btn-browse" onclick="navigate('${curType === 'languages' ? 'verdicts' : curType}')">Browse all entries to add translations</button>
-</div>`;
-return;
-}
+    if (results.length === 0) {
+        listEl.innerHTML = backBtn + `<div class="empty-state">No content available in ${l.name} yet.</div>`;
+        return;
+    }
 
-let html = backBtn;
-results.forEach(it => {
-const tr = it.translations[langCode];
-const typeLabel = it._type === 'audio' ? 'Lecture Bit' : it._type === 'verdicts' ? 'Verdict' : 'Text Benefit';
-html += `
-<div class="lang-entry-card">
-<span class="category-badge">${typeLabel}</span>
-<span class="source-highlight">— ${it.scholar || 'Source Unspecified'}</span>
-${it.arabic ? `<div class="arabic-text">${it.arabic}</div>` : ''}
-<div class="trans-body ${l.rtl ? 'rtl' : ''}">${tr.text}</div>
-<div style="margin-top:1rem">
-<button class="edit-btn" onclick="requireAuth('${l.name}', () => openTransModal('${it._type}','${it.id}','${langCode}'))">Edit this translation</button>
-<button class="edit-btn" style="margin-left:.5rem" onclick="viewEntry('${it._type}','${it.id}')">View full entry</button>
-</div>
-</div>`;
-});
-
-listEl.innerHTML = html;
+    let html = backBtn;
+    results.forEach(it => {
+        const tr = it.translations[langCode];
+        const typeLabel = it._type === 'audio' ? 'Lecture Bit' : it._type === 'verdicts' ? 'Verdict' : 'Text Benefit';
+        html += `
+        <div class="lang-entry-card">
+            <span class="category-badge">${typeLabel}</span>
+            <span class="source-highlight">— ${it.scholar || 'Source Unspecified'}</span>
+            ${it.arabic ? `<div class="arabic-text">${it.arabic}</div>` : ''}
+            <div class="trans-body ${l.rtl ? 'rtl' : ''}">${tr.text}</div>
+            <div style="margin-top:1rem">
+                <button class="edit-btn" onclick="requireAuth('${l.name}', () => openTransModal('${it._type}','${it.id}','${langCode}'))">Edit this translation</button>
+                <button class="edit-btn" style="margin-left:.5rem" onclick="viewEntry('${it._type}','${it.id}')">View full entry</button>
+            </div>
+        </div>`;
+    });
+    listEl.innerHTML = html;
 }
 
-// ─── Single entry view ────────────────────────────────────────────────────────
 function viewEntry(type, id) {
-const d = load();
-const it = (d[type] || []).find(i => i.id === id);
-if (!it) { alert('Entry not found.'); return; }
+    const d = load();
+    const it = (d[type] || []).find(i => i.id === id);
+    if (!it) { alert('Entry not found.'); return; }
 
-const view = document.getElementById('single-view');
-document.getElementById('list-view').style.display = 'none';
-view.style.display = 'block';
+    const view = document.getElementById('single-view');
+    document.getElementById('list-view').style.display = 'none';
+    view.style.display = 'block';
 
-const backFn = curType === 'languages'
-? `viewByLanguage('${currentLangCode}')`
-: `renderList('${type}')`;
-
-view.innerHTML = `<div style="margin-bottom:1rem"><button class="back-btn" style="position:static" onclick="${backFn}">← Back</button></div>`
-+ buildCard(it, type);
+    const backFn = curType === 'languages' ? `viewByLanguage('${currentLangCode}')` : `renderList('${type}')`;
+    view.innerHTML = `<div style="margin-bottom:1rem"><button class="back-btn" style="position:static" onclick="${backFn}">← Back</button></div>` + buildCard(it, type);
 }
 
 function buildCard(it, type) {
-const embed = it.url
-? `<div style="margin-top:1rem"><iframe width="100%" height="315" src="${it.url.replace('watch?v=','embed/').replace('youtu.be/','www.youtube.com/embed/')}" frameborder="0" allowfullscreen style="border-radius:4px"></iframe></div>`
-: '';
+    const embed = it.url ? `<div style="margin-top:1rem"><iframe width="100%" height="315" src="${it.url.replace('watch?v=','embed/').replace('youtu.be/','www.youtube.com/embed/')}" frameborder="0" allowfullscreen style="border-radius:4px"></iframe></div>` : '';
+    const transKeys = Object.keys(it.translations || {});
+    let tabs = '', panes = '';
+    transKeys.forEach((code, i) => {
+        const tr = it.translations[code];
+        const l = LANGS.find(lx => lx.code === code) || {native: code, name: code, rtl: false};
+        tabs += `<div class="lang-tab ${i===0?'active':''}" onclick="swTab('${it.id}','${code}',this)">${l.native}</div>`;
+        panes += `<div class="lang-pane ${i===0?'active':''}" id="lp-${it.id}-${code}">
+            <div class="trans-text ${l.rtl?'rtl':''}">${tr.text}</div>
+            <button class="edit-btn" style="margin-top:.8rem" onclick="requireAuth('${l.name}', () => openTransModal('${type}','${it.id}','${code}'))">Edit translation</button>
+        </div>`;
+    });
 
-// Build translation tabs — all languages
-const transKeys = Object.keys(it.translations || {});
-let tabs = '', panes = '';
-transKeys.forEach((code, i) => {
-const tr = it.translations[code];
-const l = LANGS.find(lx => lx.code === code) || {native: code, name: code, rtl: false};
-tabs += `<div class="lang-tab ${i===0?'active':''}" onclick="swTab('${it.id}','${code}',this)">${l.native}</div>`;
-panes += `<div class="lang-pane ${i===0?'active':''}" id="lp-${it.id}-${code}">
-<div class="trans-text ${l.rtl?'rtl':''}">${tr.text}</div>
-<button class="edit-btn" style="margin-top:.8rem" onclick="requireAuth('${l.name}', () => openTransModal('${type}','${it.id}','${code}'))">Edit this translation</button>
-</div>`;
-});
+    const transPanel = `<div class="trans-panel"><div class="trans-header"><strong style="font-size:.85rem;color:var(--green-mid)">Translations:</strong><div style="display:flex;flex-wrap:wrap;gap:.4rem;flex:1">${tabs || 'None'}</div><button class="edit-btn" onclick="requireAuth('any', () => openTransModal('${type}','${it.id}',null))">+ Add</button></div>${panes || '<div style="padding:1rem;font-style:italic">No translations yet.</div>'}</div>`;
 
-const transPanel = `
-<div class="trans-panel">
-<div class="trans-header">
-<strong style="font-size:.85rem;color:var(--green-mid)">Translations:</strong>
-<div style="display:flex;flex-wrap:wrap;gap:.4rem;flex:1">${tabs || '<span style="font-size:.85rem;font-style:italic;color:var(--green-mid)">None yet</span>'}</div>
-<button class="edit-btn" onclick="requireAuth('any', () => openTransModal('${type}','${it.id}',null))">+ Add Translation</button>
-</div>
-${panes ? panes : '<div style="padding:1rem;font-style:italic;color:var(--green-mid)">No translations added yet.</div>'}
-</div>`;
-
-return `
-<div class="benefit-card" id="card-${it.id}" style="position:relative">
-<button class="del-btn" onclick="requireAuth('admin', () => delItem('${type}','${it.id}'))">🗑 Delete</button>
-<div class="card-main">
-<span class="source-highlight">— ${it.scholar || 'Source Unspecified'}</span>
-${it.arabic ? `<div class="arabic-text">${it.arabic}</div>` : ''}
-<div class="english-translation-box"><strong style="font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;color:var(--green-mid)">Original English</strong><br><br>${it.english || '<em>No English translation provided.</em>'}</div>
-<div style="font-size:.85rem;color:var(--green-mid);margin-bottom:.5rem;font-style:italic">${it.title || ''}</div>
-<button class="edit-btn" onclick="requireAuth('admin', () => openEntryModal('${type}', '${it.id}'))">Edit Entry</button>
-${embed}
-</div>
-${transPanel}
-</div>`;
+    return `<div class="benefit-card" id="card-${it.id}">
+        <button class="del-btn" onclick="requireAuth('admin', () => delItem('${type}','${it.id}'))">Delete</button>
+        <div class="card-main">
+            <span class="source-highlight">— ${it.scholar || 'Source Unspecified'}</span>
+            ${it.arabic ? `<div class="arabic-text">${it.arabic}</div>` : ''}
+            <div class="english-translation-box">${it.english || ''}</div>
+            <button class="edit-btn" onclick="requireAuth('admin', () => openEntryModal('${type}', '${it.id}'))">Edit Entry</button>
+            ${embed}
+        </div>
+        ${transPanel}
+    </div>`;
 }
 
 function swTab(itemId, code, el) {
-const card = document.getElementById('card-'+itemId);
-card.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active'));
-card.querySelectorAll('.lang-pane').forEach(p => p.classList.remove('active'));
-el.classList.add('active');
-const pane = document.getElementById(`lp-${itemId}-${code}`);
-if (pane) pane.classList.add('active');
+    const card = document.getElementById('card-'+itemId);
+    card.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active'));
+    card.querySelectorAll('.lang-pane').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById(`lp-${itemId}-${code}`).classList.add('active');
 }
 
-// ─── Delete ───────────────────────────────────────────────────────────────────
 function delItem(type, id) {
-if (!confirm('Delete this entry permanently?')) return;
-const d = load();
-d[type] = (d[type] || []).filter(i => i.id !== id);
-save(d);
-renderList(type);
+    if (!confirm('Delete entry?')) return;
+    const d = load();
+    d[type] = d[type].filter(i => i.id !== id);
+    save(d);
+    renderList(type);
 }
 
-// ─── Entry modal (add/edit main entry) ────────────────────────────────────────
 function openEntryModal(type, editId) {
-const d = load();
-const existing = editId ? (d[type] || []).find(i => i.id === editId) : null;
-const label = type === 'audio' ? 'Lecture Bit' : type === 'verdicts' ? 'Verdict' : 'Text Benefit';
-
-document.getElementById('modal-title').textContent = (existing ? 'Edit ' : 'Add ') + label;
-document.getElementById('modal-body').innerHTML = `
-<div class="field"><label>Title (Internal Reference)</label><input type="text" id="f-title" value="${esc(existing?.title||'')}"></div>
-<div class="field"><label>Scholar / Source</label><input type="text" id="f-scholar" value="${esc(existing?.scholar||'')}"></div>
-<div class="field"><label>Arabic Source Text</label><textarea id="f-arabic" dir="rtl" style="font-family:'Noto Naskh Arabic',serif;font-size:1.2rem;line-height:2">${esc(existing?.arabic||'')}</textarea></div>
-
-```
-${type==='audio' ? `<div class="field"><label>YouTube URL</label><input type="text" id="f-url" value="${esc(existing?.url||'')}"></div>` : ''}
-<div class="field"><label>Original English Translation</label><textarea id="f-english">${esc(existing?.english||'')}</textarea></div>
-<button class="save-btn" onclick="saveEntry('${type}','${editId||''}')">Save Entry</button>
-```
-
-`;
-openModal();
+    const d = load();
+    const existing = editId ? (d[type] || []).find(i => i.id === editId) : null;
+    document.getElementById('modal-title').textContent = (existing ? 'Edit ' : 'Add ') + type;
+    document.getElementById('modal-body').innerHTML = `
+        <div class="field"><label>Title</label><input type="text" id="f-title" value="${esc(existing?.title||'')}"></div>
+        <div class="field"><label>Scholar</label><input type="text" id="f-scholar" value="${esc(existing?.scholar||'')}"></div>
+        <div class="field"><label>Arabic</label><textarea id="f-arabic" dir="rtl">${esc(existing?.arabic||'')}</textarea></div>
+        ${type==='audio' ? `<div class="field"><label>YouTube URL</label><input type="text" id="f-url" value="${esc(existing?.url||'')}"></div>` : ''}
+        <div class="field"><label>English</label><textarea id="f-english">${esc(existing?.english||'')}</textarea></div>
+        <button class="save-btn" onclick="saveEntry('${type}','${editId||''}')">Save</button>`;
+    openModal();
 }
 
 function saveEntry(type, editId) {
-const title = document.getElementById(‘f-title’).value.trim();
-if (!title) { alert(‘Please enter a title for internal reference.’); return; }
-
-const d = load();
-const oldItem = editId ? (d[type] || []).find(i => i.id === editId) : null;
-
-const it = {
-id: editId || Date.now().toString(36),
-title,
-scholar: document.getElementById(‘f-scholar’).value.trim(),
-arabic: document.getElementById(‘f-arabic’).value.trim(),
-english: document.getElementById(‘f-english’).value.trim(),
-url: document.getElementById(‘f-url’)?.value.trim() || ‘’,
-translations: oldItem ? (oldItem.translations || {}) : {}
-};
-
-if (!d[type]) d[type] = [];
-if (editId && oldItem) {
-d[type] = d[type].map(i => i.id === editId ? it : i);
-} else {
-d[type].unshift(it);
+    const title = document.getElementById('f-title').value.trim();
+    if (!title) return;
+    const d = load();
+    const oldItem = editId ? d[type].find(i => i.id === editId) : null;
+    const it = {
+        id: editId || Date.now().toString(36),
+        title,
+        scholar: document.getElementById('f-scholar').value,
+        arabic: document.getElementById('f-arabic').value,
+        english: document.getElementById('f-english').value,
+        url: document.getElementById('f-url')?.value || '',
+        translations: oldItem ? oldItem.translations : {}
+    };
+    if (editId) d[type] = d[type].map(i => i.id === editId ? it : i);
+    else d[type].unshift(it);
+    save(d);
+    closeModal();
+    renderList(type);
 }
 
-save(d);
-closeModal();
-renderList(type);
-}
-
-// ─── Translation modal ────────────────────────────────────────────────────────
 function openTransModal(type, id, code) {
-const d = load();
-const it = (d[type] || []).find(i => i.id === id);
-if (!it) { alert(‘Entry not found.’); return; }
-const ex = code && it.translations ? it.translations[code] : null;
-const l = code ? LANGS.find(lx => lx.code === code) : null;
-
-document.getElementById(‘modal-title’).textContent = code ? `Edit ${l?.name || code} Translation` : ‘Add Translation’;
-document.getElementById(‘modal-body’).innerHTML = `<div class="field"> <label>Language</label> ${code ?`<input type="text" value="${l ? l.name + ' (' + l.native + ')' : code}" disabled style="opacity:.7">`:`<select id="f-lang">${LANGS.map(lx => `<option value="${lx.code}">${lx.name} (${lx.native})</option>`).join(’’)}</select>`} </div> <div class="field"> <label>Translation Text</label> <textarea id="f-ttext" style="height:180px;${l?.rtl ? 'direction:rtl;font-family:Noto Naskh Arabic,serif;font-size:1.1rem' : ''}">${esc(ex?.text||'')}</textarea> </div> <button class="save-btn" onclick="saveTrans('${type}','${id}','${code||''}')">Save Translation</button>`;
-openModal();
+    const d = load();
+    const it = d[type].find(i => i.id === id);
+    const ex = code ? it.translations[code] : null;
+    const l = code ? LANGS.find(lx => lx.code === code) : null;
+    document.getElementById('modal-title').textContent = 'Translation';
+    document.getElementById('modal-body').innerHTML = `
+        <div class="field"><label>Language</label>${code ? `<input disabled value="${l.name}">` : `<select id="f-lang">${LANGS.map(lx=>`<option value="${lx.code}">${lx.name}</option>`).join('')}</select>`}</div>
+        <div class="field"><label>Text</label><textarea id="f-ttext">${esc(ex?.text||'')}</textarea></div>
+        <button class="save-btn" onclick="saveTrans('${type}','${id}','${code||''}')">Save</button>`;
+    openModal();
 }
 
 function saveTrans(type, id, code) {
-const text = document.getElementById(‘f-ttext’).value.trim();
-if (!text) { alert(‘Please enter the translation text.’); return; }
-
-const d = load();
-const it = (d[type] || []).find(i => i.id === id);
-if (!it) { alert(‘Entry not found.’); return; }
-
-const finalCode = code || document.getElementById(‘f-lang’).value;
-if (!it.translations) it.translations = {};
-it.translations[finalCode] = {text};
-
-save(d);
-closeModal();
-
-// Refresh the current view
-if (curType === ‘languages’) {
-viewByLanguage(currentLangCode);
-} else {
-viewEntry(type, id);
-}
+    const text = document.getElementById('f-ttext').value.trim();
+    const d = load();
+    const it = d[type].find(i => i.id === id);
+    const finalCode = code || document.getElementById('f-lang').value;
+    if (!it.translations) it.translations = {};
+    it.translations[finalCode] = {text};
+    save(d);
+    closeModal();
+    curType === 'languages' ? viewByLanguage(currentLangCode) : viewEntry(type, id);
 }
 
-// ─── Modal helpers ─────────────────────────────────────────────────────────────
-function openModal() { document.getElementById(‘modal-overlay’).classList.add(‘open’); }
-function closeModal() { document.getElementById(‘modal-overlay’).classList.remove(‘open’); }
-function closeModalOutside(ev) { if (ev.target.id === ‘modal-overlay’) closeModal(); }
-
-// ─── Utilities ────────────────────────────────────────────────────────────────
-function esc(str) {
-return String(str).replace(/&/g,’&’).replace(/”/g,’"’).replace(/</g,’<’).replace(/>/g,’>’);
-}
-
+function openModal() { document.getElementById('modal-overlay').classList.add('open'); }
+function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+function closeModalOutside(ev) { if (ev.target.id === 'modal-overlay') closeModal(); }
+function esc(str) { return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function updateCounts() {
-const d = load();
-document.getElementById(‘cnt-verdicts’).textContent = (d.verdicts||[]).length;
-document.getElementById(‘cnt-audio’).textContent = (d.audio||[]).length;
-document.getElementById(‘cnt-text’).textContent = (d.text||[]).length;
+    const d = load();
+    document.getElementById('cnt-verdicts').textContent = (d.verdicts||[]).length;
+    document.getElementById('cnt-audio').textContent = (d.audio||[]).length;
+    document.getElementById('cnt-text').textContent = (d.text||[]).length;
 }
 
-// ─── Init ─────────────────────────────────────────────────────────────────────
 updateCounts();
-</script>
-
-</body>
-</html>
