@@ -1,230 +1,98 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فوائد · Benefits</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:wght@300;400;600&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
+    <title>Benefits App</title>
     <style>
-        :root {
-            --ink: #1a1209; --parchment: #f5eed8; --cream: #faf6ec;
-            --gold: #b8860b; --gold-lt: #d4a843; --gold-pale: #f0e0a0;
-            --green: #1b3a2e; --green-mid: #2d5c47; --green-lt: #4a8c6f;
-            --rust: #8b3a1a; --border: rgba(184,134,11,.25); --shadow: rgba(26,18,9,.15);
-        }
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Cormorant Garamond', Georgia, serif; background: var(--cream); color: var(--ink); min-height: 100vh; }
-        
-        .page { display: none; padding: 2rem 1.5rem; }
-        .page.active { display: block; }
-        #home.active { display: flex; flex-direction: column; align-items: center; }
-
-        .site-title { font-family: 'Amiri', serif; font-size: clamp(3rem, 9vw, 5.5rem); color: var(--green); text-align: center; }
-        .site-title-ar { font-family: 'Noto Naskh Arabic', serif; font-size: 0.6em; color: var(--gold); display: block; }
-        
-        .home-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; width: 100%; max-width: 1000px; margin-top: 2rem; }
-        .home-card { background: var(--parchment); border: 1px solid var(--border); padding: 1.5rem; border-radius: 6px; box-shadow: 0 2px 12px var(--shadow); }
-        
-        .btn-browse, .save-btn, .back-btn { cursor: pointer; padding: 0.5rem 1rem; font-family: inherit; transition: 0.2s; border-radius: 4px; }
-        .btn-browse { background: none; border: 1px solid var(--green); color: var(--green); }
-        .btn-browse:hover { background: var(--green); color: white; }
-        .save-btn { background: var(--green); color: white; border: none; }
-        
-        .entry-link { background: var(--parchment); padding: 1rem; margin-bottom: 0.5rem; border: 1px solid var(--border); cursor: pointer; display: block; }
-        .entry-link:hover { border-color: var(--gold); }
-
-        #auth-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
-        #auth-overlay.open { display: flex; }
-        .auth-box { background: var(--parchment); padding: 2rem; width: 300px; border-radius: 8px; }
-        .auth-box input { width: 100%; margin: 10px 0; padding: 8px; }
-
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 500; align-items: center; justify-content: center; }
-        .modal-overlay.open { display: flex; }
-        .modal { background: var(--cream); padding: 2rem; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
-        
-        .field { margin-bottom: 1rem; }
-        .field label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 4px; }
-        .field input, .field textarea, .field select { width: 100%; padding: 8px; }
-        
-        .arabic-text { font-family: 'Noto Naskh Arabic', serif; direction: rtl; text-align: right; font-size: 1.4rem; margin-bottom: 1rem; }
-        .benefit-card { background: var(--parchment); border: 1px solid var(--border); padding: 1.5rem; position: relative; margin-top: 1rem; }
+        body { font-family: sans-serif; background: #faf6ec; color: #1a1209; padding: 20px; }
+        .card { background: #f5eed8; border: 1px solid #b8860b; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .btn { background: #1b3a2e; color: white; padding: 10px; border: none; cursor: pointer; border-radius: 4px; }
+        .hidden { display: none; }
+        input, textarea { width: 100%; margin: 10px 0; padding: 8px; }
+        #auth-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 100; }
     </style>
 </head>
 <body>
 
-<div id="auth-overlay">
-    <div class="auth-box">
-        <h3>Login</h3>
-        <input type="text" id="auth-user" placeholder="Username">
-        <input type="password" id="auth-pass" placeholder="Password">
-        <p id="auth-error" style="color:red; font-size:0.8rem"></p>
-        <button class="save-btn" onclick="doLogin()">Login</button>
-        <button onclick="cancelAuth()">Cancel</button>
+    <div id="auth-overlay" class="hidden">
+        <div style="background: white; padding: 20px; border-radius: 8px;">
+            <h3>Admin Login</h3>
+            <input type="password" id="pass" placeholder="Password">
+            <button class="btn" onclick="login()">Login</button>
+            <button onclick="toggleAuth(false)">Cancel</button>
+        </div>
     </div>
-</div>
 
-<div id="home" class="page active">
-    <h1 class="site-title">Benefits <span class="site-title-ar">فوائد</span></h1>
-    <div class="home-cards">
-        <div class="home-card">
+    <div id="home">
+        <h1>Benefits App</h1>
+        <div class="card">
             <h3>Verdicts</h3>
-            <p>Count: <span id="cnt-verdicts">0</span></p>
-            <button class="btn-browse" onclick="navigate('verdicts')">Browse</button>
+            <button class="btn" onclick="showSection('verdicts')">Browse</button>
         </div>
-        <div class="home-card">
-            <h3>Lecture Bits</h3>
-            <p>Count: <span id="cnt-audio">0</span></p>
-            <button class="btn-browse" onclick="navigate('audio')">Browse</button>
-        </div>
-        <div class="home-card">
-            <h3>Text Benefits</h3>
-            <p>Count: <span id="cnt-text">0</span></p>
-            <button class="btn-browse" onclick="navigate('text')">Browse</button>
+        <div class="card">
+            <h3>Audio</h3>
+            <button class="btn" onclick="showSection('audio')">Browse</button>
         </div>
     </div>
-</div>
 
-<div id="inner-container" class="page">
-    <button class="back-btn" onclick="goHome()">← Back</button>
-    <h2 id="inner-title" style="margin: 1rem 0;"></h2>
-    <div id="list-view"></div>
-    <div id="single-view" style="display:none"></div>
-</div>
-
-<div class="modal-overlay" id="modal-overlay">
-    <div class="modal">
-        <h3 id="modal-title"></h3>
-        <div id="modal-body"></div>
-        <button onclick="closeModal()">Close</button>
+    <div id="section" class="hidden">
+        <button onclick="goHome()">Back Home</button>
+        <h2 id="sec-title"></h2>
+        <button class="btn" onclick="toggleAuth(true)">+ Add Entry</button>
+        <div id="list"></div>
     </div>
-</div>
 
-<script>
-    const ADMIN_USER = 'admin';
-    const ADMIN_PASS = 'Nael2026';
-    
-    let currentUser = null;
-    let pendingAction = null;
-    let curType = '';
+    <script>
+        let currentType = '';
+        let isAdmin = false;
 
-    function load() {
-        return JSON.parse(localStorage.getItem('ib_v3')) || {verdicts:[], audio:[], text:[]};
-    }
-    function save(d) { localStorage.setItem('ib_v3', JSON.stringify(d)); }
-
-    function navigate(type) {
-        curType = type;
-        document.getElementById('home').classList.remove('active');
-        document.getElementById('inner-container').classList.add('active');
-        document.getElementById('inner-title').textContent = type.toUpperCase();
-        renderList(type);
-    }
-
-    function goHome() {
-        document.getElementById('inner-container').classList.remove('active');
-        document.getElementById('home').classList.add('active');
-        updateCounts();
-    }
-
-    function renderList(type) {
-        const items = load()[type] || [];
-        const listEl = document.getElementById('list-view');
-        document.getElementById('single-view').style.display = 'none';
-        listEl.style.display = 'block';
-
-        let html = `<button class="save-btn" onclick="requireAuth('admin', () => openEntryModal('${type}'))">+ Add New</button><br><br>`;
-        if(items.length === 0) html += "<p>No entries yet.</p>";
-        else {
-            items.forEach(it => {
-                html += `<div class="entry-link" onclick="viewEntry('${type}','${it.id}')">${it.title}</div>`;
-            });
+        function showSection(type) {
+            currentType = type;
+            document.getElementById('home').classList.add('hidden');
+            document.getElementById('section').classList.remove('hidden');
+            document.getElementById('sec-title').innerText = type.toUpperCase();
+            render();
         }
-        listEl.innerHTML = html;
-    }
 
-    function viewEntry(type, id) {
-        const it = load()[type].find(i => i.id === id);
-        const view = document.getElementById('single-view');
-        document.getElementById('list-view').style.display = 'none';
-        view.style.display = 'block';
-        
-        view.innerHTML = `
-            <div class="benefit-card">
-                <h3>${it.title}</h3>
-                <p><strong>Scholar:</strong> ${it.scholar}</p>
-                <div class="arabic-text">${it.arabic}</div>
-                <p>${it.english}</p>
-                <button class="save-btn" onclick="requireAuth('admin', () => delItem('${type}','${id}'))">Delete</button>
-            </div>
-        `;
-    }
-
-    function openEntryModal(type) {
-        document.getElementById('modal-title').textContent = "Add Entry";
-        document.getElementById('modal-body').innerHTML = `
-            <div class="field"><label>Title</label><input type="text" id="f-title"></div>
-            <div class="field"><label>Scholar</label><input type="text" id="f-scholar"></div>
-            <div class="field"><label>Arabic</label><textarea id="f-arabic" dir="rtl"></textarea></div>
-            <div class="field"><label>English</label><textarea id="f-english"></textarea></div>
-            <button class="save-btn" onclick="saveEntry('${type}')">Save</button>
-        `;
-        document.getElementById('modal-overlay').classList.add('open');
-    }
-
-    function saveEntry(type) {
-        const d = load();
-        const newItem = {
-            id: Date.now().toString(),
-            title: document.getElementById('f-title').value,
-            scholar: document.getElementById('f-scholar').value,
-            arabic: document.getElementById('f-arabic').value,
-            english: document.getElementById('f-english').value
-        };
-        d[type].unshift(newItem);
-        save(d);
-        closeModal();
-        renderList(type);
-    }
-
-    function delItem(type, id) {
-        if(!confirm("Delete?")) return;
-        const d = load();
-        d[type] = d[type].filter(i => i.id !== id);
-        save(d);
-        renderList(type);
-    }
-
-    function requireAuth(role, action) {
-        if (currentUser === ADMIN_USER) action();
-        else {
-            pendingAction = action;
-            document.getElementById('auth-overlay').classList.add('open');
+        function goHome() {
+            document.getElementById('home').classList.remove('hidden');
+            document.getElementById('section').classList.add('hidden');
         }
-    }
 
-    function doLogin() {
-        const u = document.getElementById('auth-user').value;
-        const p = document.getElementById('auth-pass').value;
-        if (u === ADMIN_USER && p === ADMIN_PASS) {
-            currentUser = u;
-            document.getElementById('auth-overlay').classList.remove('open');
-            if(pendingAction) pendingAction();
-        } else {
-            alert("Wrong credentials");
+        function toggleAuth(show) {
+            if (isAdmin && show) { showAddForm(); return; }
+            document.getElementById('auth-overlay').classList.toggle('hidden', !show);
         }
-    }
 
-    function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
-    function cancelAuth() { document.getElementById('auth-overlay').classList.remove('open'); }
-    function updateCounts() {
-        const d = load();
-        document.getElementById('cnt-verdicts').textContent = d.verdicts.length;
-        document.getElementById('cnt-audio').textContent = d.audio.length;
-        document.getElementById('cnt-text').textContent = d.text.length;
-    }
+        function login() {
+            if (document.getElementById('pass').value === 'Nael2026') {
+                isAdmin = true;
+                toggleAuth(false);
+                showAddForm();
+            } else {
+                alert('Wrong password');
+            }
+        }
 
-    updateCounts();
-</script>
+        function showAddForm() {
+            const title = prompt("Enter Title:");
+            if (!title) return;
+            const data = JSON.parse(localStorage.getItem('my_data') || '{"verdicts":[],"audio":[]}');
+            data[currentType].push({ title: title, id: Date.now() });
+            localStorage.setItem('my_data', JSON.stringify(data));
+            render();
+        }
+
+        function render() {
+            const data = JSON.parse(localStorage.getItem('my_data') || '{"verdicts":[],"audio":[]}');
+            const list = data[currentType];
+            document.getElementById('list').innerHTML = list.map(item => `<div class="card">${item.title}</div>`).join('');
+        }
+
+        function goHome() {
+            document.getElementById('home').classList.remove('hidden');
+            document.getElementById('section').classList.add('hidden');
+        }
+    </script>
 </body>
 </html>
