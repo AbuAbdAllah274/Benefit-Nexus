@@ -1,287 +1,491 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فوائد · Benefits</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:wght@300;400;600&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --ink: #1a1209; --parchment: #f5eed8; --cream: #faf6ec;
-            --gold: #b8860b; --gold-lt: #d4a843; --gold-pale: #f0e0a0;
-            --green: #1b3a2e; --green-mid: #2d5c47; --green-lt: #4a8c6f;
-            --rust: #8b3a1a; --border: rgba(184,134,11,.25); --shadow: rgba(26,18,9,.15);
-        }
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Cormorant Garamond', Georgia, serif; background: var(--cream); color: var(--ink); min-height: 100vh; overflow-x: hidden; }
-        
-        .page { display: none; padding: 2rem 1.5rem; min-height: 100vh; }
-        .page.active { display: block; }
-        #home.active { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+import { useState, useEffect } from “react”;
 
-        .site-title { font-family: 'Amiri', serif; font-size: clamp(3rem, 9vw, 5.5rem); color: var(--green); line-height: 1.1; margin-top: 1rem; }
-        .site-title-ar { font-family: 'Noto Naskh Arabic', serif; font-size: 0.6em; color: var(--gold); display: block; margin-top: 0.5rem; }
-        
-        .divider { width: 160px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 2rem auto; }
+const ADMIN_USER = “admin”;
+const ADMIN_PASS = “Nael2026”;
+const LANG_PASS_SUFFIX = “1447”;
 
-        .home-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; width: 100%; max-width: 1000px; margin-top: 1rem; }
-        .home-card { background: var(--parchment); border: 1px solid var(--border); padding: 1.5rem; border-radius: 6px; box-shadow: 0 2px 12px var(--shadow); transition: 0.3s; text-align: left; }
-        .home-card:hover { transform: translateY(-4px); }
-        .card-title { font-size: 1.3rem; font-weight: 600; color: var(--green); margin-bottom: 1rem; }
-        .card-footer { display: flex; justify-content: space-between; align-items: center; }
+const LANGS = [
+{ code: “af”, name: “Afrikaans”, native: “Afrikaans”, rtl: false },
+{ code: “am”, name: “Amharic”, native: “አማርኛ”, rtl: false },
+{ code: “ar”, name: “Arabic”, native: “العربية”, rtl: true },
+{ code: “bn”, name: “Bengali”, native: “বাংলা”, rtl: false },
+{ code: “en”, name: “English”, native: “English”, rtl: false },
+{ code: “fr”, name: “French”, native: “Français”, rtl: false },
+{ code: “id”, name: “Indonesian”, native: “Bahasa Indonesia”, rtl: false },
+{ code: “ms”, name: “Malay”, native: “Bahasa Melayu”, rtl: false },
+{ code: “so”, name: “Somali”, native: “Soomaali”, rtl: false },
+{ code: “sw”, name: “Swahili”, native: “Kiswahili”, rtl: false },
+{ code: “ti”, name: “Tigrinya”, native: “ትግርኛ”, rtl: false },
+{ code: “tr”, name: “Turkish”, native: “Türkçe”, rtl: false },
+{ code: “ur”, name: “Urdu”, native: “اردو”, rtl: true },
+];
 
-        .btn-browse, .save-btn, .back-btn, .edit-btn { cursor: pointer; padding: 0.4rem 1rem; font-family: inherit; border-radius: 4px; font-size: 1rem; transition: 0.2s; }
-        .btn-browse { background: none; border: 1px solid var(--green); color: var(--green); }
-        .btn-browse:hover { background: var(--green); color: white; }
-        .save-btn { background: var(--green); color: var(--gold-pale); border: none; }
-        
-        .entry-link { background: var(--parchment); padding: 1.2rem; margin-bottom: 0.8rem; border: 1px solid var(--border); cursor: pointer; display: block; text-decoration: none; color: var(--green); position: relative; }
-        .entry-link:hover { border-color: var(--gold); transform: translateX(5px); }
+const EMPTY_DB = { verdicts: [], audio: [], text: [] };
 
-        #auth-overlay, .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(26,18,9,0.9); z-index: 1000; align-items: center; justify-content: center; }
-        #auth-overlay.open, .modal-overlay.open { display: flex; }
-        .auth-box, .modal { background: var(--parchment); padding: 2rem; border-radius: 4px; width: 320px; border: 1px solid var(--gold); }
-        .modal { width: 95%; max-width: 600px; max-height: 90vh; overflow-y: auto; background: var(--cream); }
+function loadDB() {
+try { return JSON.parse(localStorage.getItem(“ib_v4”)) || EMPTY_DB; }
+catch { return EMPTY_DB; }
+}
+function saveDB(d) { localStorage.setItem(“ib_v4”, JSON.stringify(d)); }
 
-        .field { margin-bottom: 1.2rem; }
-        .field label { display: block; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 5px; color: var(--green-mid); letter-spacing: 0.05em; }
-        .field input, .field textarea, .field select { width: 100%; padding: 10px; background: var(--parchment); border: 1px solid var(--border); font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; }
-        
-        .arabic-text { font-family: 'Noto Naskh Arabic', serif; direction: rtl; text-align: right; font-size: 1.4rem; line-height: 2.2; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
-        .benefit-card { background: var(--parchment); border: 1px solid var(--border); padding: 2rem; position: relative; border-radius: 4px; }
-        .source-highlight { color: var(--gold); font-size: 1.1rem; font-weight: 700; font-style: italic; border-left: 3px solid var(--gold); padding-left: 10px; margin-bottom: 1rem; display: block; }
-    </style>
-</head>
-<body>
+// ── Styles (inline objects) ────────────────────────────────────────────────────
+const C = {
+ink: “#1a1209”, parchment: “#f5eed8”, cream: “#faf6ec”,
+gold: “#b8860b”, goldLt: “#d4a843”, goldPale: “#f0e0a0”,
+green: “#1b3a2e”, greenMid: “#2d5c47”, greenLt: “#4a8c6f”,
+rust: “#8b3a1a”, border: “rgba(184,134,11,.25)”, shadow: “rgba(26,18,9,.15)”,
+};
 
-<div id="auth-overlay">
-    <div class="auth-box">
-        <h3 style="margin-bottom:1rem; font-family:'Amiri', serif;">Contributor Login</h3>
-        <input type="text" id="auth-user" placeholder="Username">
-        <input type="password" id="auth-pass" placeholder="Password" style="width:100%; margin-top:10px; padding:8px;">
-        <button class="save-btn" style="width:100%; margin-top:1rem;" onclick="doLogin()">Login</button>
-        <button class="btn-browse" style="width:100%; margin-top:0.5rem" onclick="cancelAuth()">Cancel</button>
-    </div>
+const s = {
+body: { fontFamily: “‘Cormorant Garamond’, Georgia, serif”, background: C.cream, color: C.ink, minHeight: “100vh” },
+btn: (variant = “outline”) => ({
+fontFamily: “‘Cormorant Garamond’, Georgia, serif”, fontSize: “1rem”,
+padding: “.4rem 1.1rem”, cursor: “pointer”, borderRadius: 3, transition: “.2s”,
+…(variant === “solid”
+? { background: C.green, border: “none”, color: C.goldPale }
+: { background: “none”, border: `1px solid ${C.green}`, color: C.green }),
+}),
+input: { width: “100%”, background: C.parchment, border: `1px solid ${C.border}`, padding: “.55rem .85rem”, fontFamily: “inherit”, fontSize: “1rem”, boxSizing: “border-box” },
+label: { display: “block”, fontSize: “.75rem”, textTransform: “uppercase”, letterSpacing: “.05em”, marginBottom: “.3rem”, color: C.greenMid },
+card: { background: C.parchment, border: `1px solid ${C.border}`, borderRadius: 4, marginBottom: “1rem”, padding: “1.4rem 1.6rem”, position: “relative” },
+entryLink: { display: “block”, background: C.parchment, padding: “1.1rem 1.4rem”, marginBottom: “.7rem”, border: `1px solid ${C.border}`, borderRadius: 4, cursor: “pointer”, color: C.green, transition: “.2s” },
+sourceHighlight: { color: C.gold, fontSize: “1.05rem”, fontWeight: 700, fontStyle: “italic”, borderLeft: `3px solid ${C.gold}`, paddingLeft: 10, marginBottom: “1rem”, display: “block” },
+arabicText: { fontFamily: “‘Noto Naskh Arabic’, serif”, fontSize: “1.3rem”, lineHeight: 2.2, textAlign: “right”, direction: “rtl”, marginBottom: “1.2rem”, paddingBottom: “1rem”, borderBottom: `1px solid ${C.border}` },
+englishBox: { fontSize: “1.05rem”, lineHeight: 1.7, marginBottom: “1.2rem”, padding: “1rem”, background: “rgba(184,134,11,0.05)”, borderRadius: 4, borderLeft: `2px solid ${C.goldLt}` },
+};
+
+// ── Auth Modal ─────────────────────────────────────────────────────────────────
+function AuthModal({ onSuccess, onCancel }) {
+const [user, setUser] = useState(””);
+const [pass, setPass] = useState(””);
+const [err, setErr] = useState(””);
+
+function attempt() {
+if ((user === ADMIN_USER && pass === ADMIN_PASS) || (user && pass === user + LANG_PASS_SUFFIX)) {
+onSuccess(user);
+} else {
+setErr(“Incorrect credentials. Try again.”);
+}
+}
+
+return (
+<div style={{ position: “fixed”, inset: 0, background: “rgba(26,18,9,.85)”, zIndex: 1000, display: “flex”, alignItems: “center”, justifyContent: “center” }}>
+<div style={{ background: C.parchment, padding: “2rem”, borderRadius: 4, width: 320, border: `1px solid ${C.gold}` }}>
+<h3 style={{ marginBottom: “1rem”, color: C.green, fontFamily: “‘Amiri’, serif”, fontSize: “1.4rem” }}>Contributor Login</h3>
+<div style={{ marginBottom: “.5rem” }}>
+<input style={s.input} placeholder=“Username (admin or Language name)” value={user} onChange={e => setUser(e.target.value)} />
+</div>
+<div style={{ marginBottom: “.5rem” }}>
+<input style={s.input} type=“password” placeholder=“Password” value={pass} onChange={e => setPass(e.target.value)} onKeyDown={e => e.key === “Enter” && attempt()} />
+</div>
+{err && <div style={{ color: C.rust, fontSize: “.9rem”, marginBottom: “.5rem” }}>{err}</div>}
+<button style={{ …s.btn(“solid”), width: “100%”, marginTop: “.3rem” }} onClick={attempt}>Login</button>
+<button style={{ …s.btn(“outline”), width: “100%”, marginTop: “.5rem” }} onClick={onCancel}>Cancel</button>
+<div style={{ marginTop: “1rem”, fontSize: “.8rem”, color: C.greenMid, lineHeight: 1.5 }}>
+Language contributors: username = language name (e.g. <em>Urdu</em>), password = <em>Urdu1447</em>
+</div>
+</div>
+</div>
+);
+}
+
+// ── Modal wrapper ──────────────────────────────────────────────────────────────
+function Modal({ title, children, onClose }) {
+return (
+<div style={{ position: “fixed”, inset: 0, background: “rgba(26,18,9,.65)”, zIndex: 200, display: “flex”, alignItems: “center”, justifyContent: “center” }} onClick={e => e.target === e.currentTarget && onClose()}>
+<div style={{ background: C.cream, padding: “2.2rem”, width: “100%”, maxWidth: 560, maxHeight: “90vh”, overflowY: “auto”, position: “relative”, border: `1px solid ${C.border}` }}>
+<button style={{ position: “absolute”, top: “1rem”, right: “1rem”, background: “none”, border: “none”, cursor: “pointer”, fontSize: “1.2rem” }} onClick={onClose}>✕</button>
+<h3 style={{ marginBottom: “1.5rem”, fontFamily: “‘Amiri’, serif”, color: C.green, fontSize: “1.4rem” }}>{title}</h3>
+{children}
+</div>
+</div>
+);
+}
+
+// ── Entry Form ─────────────────────────────────────────────────────────────────
+function EntryForm({ type, existing, onSave }) {
+const [title, setTitle] = useState(existing?.title || “”);
+const [scholar, setScholar] = useState(existing?.scholar || “”);
+const [arabic, setArabic] = useState(existing?.arabic || “”);
+const [english, setEnglish] = useState(existing?.english || “”);
+const [url, setUrl] = useState(existing?.url || “”);
+
+function save() {
+if (!title.trim()) { alert(“Please enter a title for internal reference.”); return; }
+onSave({ title: title.trim(), scholar: scholar.trim(), arabic: arabic.trim(), english: english.trim(), url: url.trim() });
+}
+
+const Field = ({ label, children }) => (
+<div style={{ marginBottom: “1rem” }}>
+<label style={s.label}>{label}</label>
+{children}
+</div>
+);
+
+return (
+<div>
+<Field label="Title (Internal Reference)"><input style={s.input} value={title} onChange={e => setTitle(e.target.value)} /></Field>
+<Field label="Scholar / Source"><input style={s.input} value={scholar} onChange={e => setScholar(e.target.value)} /></Field>
+<Field label="Arabic Source Text">
+<textarea style={{ …s.input, minHeight: 100, resize: “vertical”, direction: “rtl”, fontFamily: “‘Noto Naskh Arabic’, serif”, fontSize: “1.2rem”, lineHeight: 2 }} value={arabic} onChange={e => setArabic(e.target.value)} />
+</Field>
+{type === “audio” && <Field label="YouTube URL"><input style={s.input} value={url} onChange={e => setUrl(e.target.value)} /></Field>}
+<Field label="Original English Translation">
+<textarea style={{ …s.input, minHeight: 100, resize: “vertical” }} value={english} onChange={e => setEnglish(e.target.value)} />
+</Field>
+<button style={s.btn(“solid”)} onClick={save}>Save Entry</button>
+</div>
+);
+}
+
+// ── Translation Form ───────────────────────────────────────────────────────────
+function TransForm({ fixedCode, existing, onSave }) {
+const [code, setCode] = useState(fixedCode || LANGS[0].code);
+const [text, setText] = useState(existing || “”);
+const lang = LANGS.find(l => l.code === code);
+
+function save() {
+if (!text.trim()) { alert(“Please enter the translation text.”); return; }
+onSave(code, text.trim());
+}
+
+return (
+<div>
+<div style={{ marginBottom: “1rem” }}>
+<label style={s.label}>Language</label>
+{fixedCode
+? <input style={{ …s.input, opacity: .7 }} disabled value={`${lang?.name} (${lang?.native})`} />
+: <select style={s.input} value={code} onChange={e => setCode(e.target.value)}>
+{LANGS.map(l => <option key={l.code} value={l.code}>{l.name} ({l.native})</option>)}
+</select>
+}
+</div>
+<div style={{ marginBottom: “1rem” }}>
+<label style={s.label}>Translation Text</label>
+<textarea
+style={{ …s.input, minHeight: 160, resize: “vertical”, …(lang?.rtl ? { direction: “rtl”, fontFamily: “‘Noto Naskh Arabic’, serif”, fontSize: “1.1rem” } : {}) }}
+value={text} onChange={e => setText(e.target.value)}
+/>
+</div>
+<button style={s.btn(“solid”)} onClick={save}>Save Translation</button>
+</div>
+);
+}
+
+// ── Single Entry Card ──────────────────────────────────────────────────────────
+function EntryCard({ item, type, currentUser, onEdit, onDelete, onAddTrans, onEditTrans }) {
+const [activeTab, setActiveTab] = useState(Object.keys(item.translations || {})[0] || null);
+const tabs = Object.keys(item.translations || {});
+const lang = LANGS.find(l => l.code === activeTab);
+
+const embedUrl = item.url
+? item.url.replace(“watch?v=”, “embed/”).replace(“youtu.be/”, “www.youtube.com/embed/”)
+: null;
+
+return (
+<div style={{ …s.card, paddingTop: “1.6rem” }}>
+<button style={{ position: “absolute”, top: “1rem”, right: “1rem”, background: “none”, border: `1px solid rgba(139,58,26,.3)`, color: C.rust, cursor: “pointer”, padding: “.2rem .6rem”, borderRadius: 3, fontSize: “.85rem” }}
+onClick={() => onDelete()}>🗑 Delete</button>
+
+```
+<span style={s.sourceHighlight}>— {item.scholar || "Source Unspecified"}</span>
+{item.arabic && <div style={s.arabicText}>{item.arabic}</div>}
+<div style={s.englishBox}>
+<div style={{ fontSize: ".75rem", textTransform: "uppercase", letterSpacing: ".05em", color: C.greenMid, marginBottom: ".5rem" }}>Original English</div>
+{item.english || <em>No English translation provided.</em>}
+</div>
+{item.title && <div style={{ fontSize: ".85rem", color: C.greenMid, fontStyle: "italic", marginBottom: ".5rem" }}>{item.title}</div>}
+<button style={{ ...s.btn("outline"), fontSize: ".9rem", marginBottom: "1rem" }} onClick={onEdit}>Edit Entry</button>
+
+{embedUrl && <iframe width="100%" height="315" src={embedUrl} frameBorder="0" allowFullScreen style={{ borderRadius: 4, display: "block", marginBottom: "1rem" }} />}
+
+{/* Translations panel */}
+<div style={{ borderTop: `1px solid ${C.border}`, marginTop: ".5rem" }}>
+<div style={{ display: "flex", alignItems: "center", gap: ".6rem", padding: ".6rem 0 .5rem", flexWrap: "wrap" }}>
+<span style={{ fontSize: ".8rem", color: C.greenMid, fontWeight: 600 }}>Translations:</span>
+{tabs.map(code => {
+const l = LANGS.find(lx => lx.code === code);
+return (
+<div key={code}
+style={{ padding: ".2rem .7rem", cursor: "pointer", border: `1px solid ${activeTab === code ? C.green : C.border}`, fontSize: ".8rem", borderRadius: 15, background: activeTab === code ? C.green : C.cream, color: activeTab === code ? "white" : C.ink, transition: ".2s" }}
+onClick={() => setActiveTab(code)}>{l?.native || code}</div>
+);
+})}
+{tabs.length === 0 && <span style={{ fontSize: ".85rem", fontStyle: "italic", color: C.greenMid }}>None yet</span>}
+<button style={{ ...s.btn("outline"), fontSize: ".8rem", marginLeft: "auto" }} onClick={onAddTrans}>+ Add Translation</button>
 </div>
 
-<div id="home" class="page active">
-    <h1 class="site-title">Benefits <span class="site-title-ar">فوائد</span></h1>
-    <p style="font-style:italic; color:var(--green-mid)">A treasury of Islamic knowledge & verdicts</p>
-    <div class="divider"></div>
-    <div class="home-cards">
-        <div class="home-card">
-            <div class="card-title">Verdicts</div>
-            <div class="card-footer"><span id="cnt-verdicts">0</span><button class="btn-browse" onclick="navigate('verdicts')">Browse</button></div>
-        </div>
-        <div class="home-card">
-            <div class="card-title">Lecture Bits</div>
-            <div class="card-footer"><span id="cnt-audio">0</span><button class="btn-browse" onclick="navigate('audio')">Browse</button></div>
-        </div>
-        <div class="home-card">
-            <div class="card-title">Text Benefits</div>
-            <div class="card-footer"><span id="cnt-text">0</span><button class="btn-browse" onclick="navigate('text')">Browse</button></div>
-        </div>
-        <div class="home-card" style="border: 1px solid var(--gold)">
-            <div class="card-title">Languages</div>
-            <div class="card-footer"><span>Find</span><button class="btn-browse" onclick="navigate('languages')">Enter</button></div>
-        </div>
-    </div>
+{activeTab && item.translations[activeTab] && (
+<div style={{ padding: "1rem 0" }}>
+<div style={{ fontSize: "1.05rem", lineHeight: 1.8, ...(lang?.rtl ? { direction: "rtl", textAlign: "right", fontFamily: "'Noto Naskh Arabic', serif", fontSize: "1.2rem" } : {}) }}>
+{item.translations[activeTab].text}
+</div>
+<button style={{ ...s.btn("outline"), fontSize: ".85rem", marginTop: ".8rem" }} onClick={() => onEditTrans(activeTab)}>Edit this translation</button>
+</div>
+)}
+</div>
+</div>
+```
+
+);
+}
+
+// ── Main App ───────────────────────────────────────────────────────────────────
+export default function App() {
+const [db, setDb] = useState(loadDB);
+const [view, setView] = useState(“home”); // home | list | entry | langList | langView
+const [curType, setCurType] = useState(“verdicts”);
+const [curEntryId, setCurEntryId] = useState(null);
+const [curLang, setCurLang] = useState(null);
+const [currentUser, setCurrentUser] = useState(null);
+
+// Auth gate
+const [authPending, setAuthPending] = useState(null); // {role, action}
+
+// Modals
+const [modal, setModal] = useState(null); // {type: ‘entry’|‘trans’, …props}
+
+function persist(newDb) { setDb(newDb); saveDB(newDb); }
+
+function isAuthorized(role) {
+if (!currentUser) return false;
+if (currentUser === ADMIN_USER) return true;
+if (!role || role === “any”) return true;
+return currentUser.toLowerCase() === role.toLowerCase();
+}
+
+function requireAuth(role, action) {
+if (isAuthorized(role)) { action(); }
+else { setAuthPending({ role, action }); }
+}
+
+function handleAuthSuccess(user) {
+setCurrentUser(user);
+setAuthPending(prev => {
+if (prev) {
+const { role, action } = prev;
+const ok = user === ADMIN_USER || !role || role === “any” || user.toLowerCase() === role.toLowerCase();
+if (ok) setTimeout(action, 0);
+}
+return null;
+});
+}
+
+// ── CRUD ──
+function addEntry(type, data) {
+const newDb = { …db, [type]: [{ id: Date.now().toString(36), translations: {}, …data }, …(db[type] || [])] };
+persist(newDb); setModal(null);
+}
+function editEntry(type, id, data) {
+const newDb = { …db, [type]: db[type].map(it => it.id === id ? { …it, …data } : it) };
+persist(newDb); setModal(null);
+}
+function deleteEntry(type, id) {
+if (!confirm(“Delete this entry permanently?”)) return;
+const newDb = { …db, [type]: db[type].filter(it => it.id !== id) };
+persist(newDb); setView(“list”);
+}
+function saveTrans(type, id, code, text) {
+const newDb = { …db, [type]: db[type].map(it => it.id === id ? { …it, translations: { …(it.translations || {}), [code]: { text } } } : it) };
+persist(newDb); setModal(null);
+}
+
+// ── Current entry ──
+const curEntry = curEntryId ? (db[curType] || []).find(i => i.id === curEntryId) : null;
+const curLangMeta = LANGS.find(l => l.code === curLang);
+
+// ── Render ──
+const PAGE_TITLES = { verdicts: “Verdicts أحكام”, audio: “Lecture Bits مقتطفات”, text: “Text Benefits فوائد” };
+
+function BackBtn({ label = “← Back”, onClick }) {
+return <button style={{ …s.btn(“outline”), marginBottom: “1.2rem” }} onClick={onClick}>{label}</button>;
+}
+
+// HOME
+if (view === “home”) return (
+<div style={{ …s.body, display: “flex”, flexDirection: “column”, alignItems: “center”, justifyContent: “center”, padding: “3rem 1.5rem”, textAlign: “center” }}>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet" />
+<h1 style={{ fontFamily: “‘Amiri’, serif”, fontSize: “clamp(3rem,9vw,5rem)”, fontWeight: 700, color: C.green, lineHeight: 1 }}>
+Benefits<br /><span style={{ fontFamily: “‘Noto Naskh Arabic’, serif”, fontSize: “clamp(2rem,6vw,3.5rem)”, color: C.gold }}>فوائد</span>
+</h1>
+<p style={{ fontStyle: “italic”, color: C.greenMid, marginTop: “.8rem” }}>A treasury of Islamic knowledge & verdicts</p>
+<div style={{ width: 160, height: 1, background: `linear-gradient(90deg, transparent, ${C.gold}, transparent)`, margin: “1.8rem auto” }} />
+<div style={{ display: “grid”, gridTemplateColumns: “repeat(auto-fit, minmax(200px,1fr))”, gap: “1.5rem”, maxWidth: 900, width: “100%” }}>
+{[
+{ key: “verdicts”, label: “Verdicts ⚖️” },
+{ key: “audio”, label: “Lecture Bits 📹” },
+{ key: “text”, label: “Text Benefits 📜” },
+].map(({ key, label }) => (
+<div key={key} style={{ …s.card, boxShadow: `0 2px 12px ${C.shadow}` }}>
+<div style={{ fontSize: “1.2rem”, fontWeight: 600, color: C.green }}>{label}</div>
+<div style={{ display: “flex”, alignItems: “center”, justifyContent: “space-between”, marginTop: “1.2rem” }}>
+<span style={{ color: C.greenMid }}>{(db[key] || []).length} entries</span>
+<button style={s.btn()} onClick={() => { setCurType(key); setView(“list”); }}> Browse</button>
+</div>
+</div>
+))}
+<div style={{ …s.card, border: `1px solid ${C.gold}`, boxShadow: `0 2px 12px ${C.shadow}` }}>
+<div style={{ fontSize: “1.2rem”, fontWeight: 600, color: C.green }}>Browse by Language 🌍</div>
+<div style={{ display: “flex”, alignItems: “center”, justifyContent: “space-between”, marginTop: “1.2rem” }}>
+<span style={{ color: C.greenMid }}>All languages</span>
+<button style={s.btn()} onClick={() => setView(“langList”)}>Enter</button>
+</div>
+</div>
 </div>
 
-<div id="inner-container" class="page">
-    <button class="back-btn" onclick="goHome()">← Home</button>
-    <h2 id="inner-title" style="margin: 2rem 0; font-family: 'Amiri', serif; font-size: 2rem; color: var(--green);"></h2>
-    <div id="list-view"></div>
-    <div id="single-view" style="display:none"></div>
+```
+{authPending && <AuthModal onSuccess={handleAuthSuccess} onCancel={() => setAuthPending(null)} />}
 </div>
+```
 
-<div class="modal-overlay" id="modal-overlay">
-    <div class="modal">
-        <h3 id="modal-title" style="margin-bottom:1.5rem; font-family:'Amiri', serif; color:var(--green);"></h3>
-        <div id="modal-body"></div>
-        <button class="btn-browse" style="width:100%; margin-top:10px;" onclick="closeModal()">Close</button>
-    </div>
+);
+
+// LIST VIEW
+if (view === “list”) {
+const items = db[curType] || [];
+return (
+<div style={{ …s.body, maxWidth: 900, margin: “0 auto”, padding: “2rem 1.5rem 5rem” }}>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet" />
+<BackBtn label=“← Home” onClick={() => setView(“home”)} />
+<h2 style={{ fontFamily: “‘Amiri’, serif”, fontSize: “1.8rem”, color: C.green, marginBottom: “1.5rem” }}>{PAGE_TITLES[curType]}</h2>
+<button style={{ …s.btn(“solid”), marginBottom: “1.2rem” }} onClick={() => requireAuth(“admin”, () => setModal({ kind: “entry”, type: curType, id: null }))}>+ Add New Entry</button>
+{items.length === 0
+? <div style={{ textAlign: “center”, padding: “3rem”, color: C.greenMid, fontStyle: “italic” }}>No entries yet.</div>
+: items.map(it => (
+<div key={it.id} style={s.entryLink} onClick={() => { setCurEntryId(it.id); setView(“entry”); }}>
+{it.title || “(Untitled)”}
 </div>
+))}
 
-<script>
-    const ADMIN_USER = 'admin';
-    const ADMIN_PASS = 'Nael2026';
-    const LANGS = [
-        {code:'ar', name:'Arabic', native:'العربية'},
-        {code:'en', name:'English', native:'English'},
-        {code:'ur', name:'Urdu', native:'اردو'},
-        {code:'sw', name:'Swahili', native:'Kiswahili'},
-        {code:'bn', name:'Bengali', native:'বাংলা'}
-    ];
+```
+{modal?.kind === "entry" && (
+<Modal title={modal.id ? "Edit Entry" : "Add Entry"} onClose={() => setModal(null)}>
+<EntryForm type={modal.type} existing={modal.id ? (db[modal.type] || []).find(i => i.id === modal.id) : null}
+onSave={data => modal.id ? editEntry(modal.type, modal.id, data) : addEntry(modal.type, data)} />
+</Modal>
+)}
+{authPending && <AuthModal onSuccess={handleAuthSuccess} onCancel={() => setAuthPending(null)} />}
+</div>
+);
+```
 
-    let currentUser = null;
-    let pendingAction = null;
-    let curType = '';
+}
 
-    function load() {
-        return JSON.parse(localStorage.getItem('ib_v3')) || {verdicts:[], audio:[], text:[]};
-    }
-    function save(d) { localStorage.setItem('ib_v3', JSON.stringify(d)); }
+// SINGLE ENTRY VIEW
+if (view === “entry” && curEntry) {
+return (
+<div style={{ …s.body, maxWidth: 900, margin: “0 auto”, padding: “2rem 1.5rem 5rem” }}>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet" />
+<BackBtn label=“← Back to list” onClick={() => setView(“list”)} />
+<EntryCard
+item={curEntry} type={curType} currentUser={currentUser}
+onEdit={() => requireAuth(“admin”, () => setModal({ kind: “entry”, type: curType, id: curEntry.id }))}
+onDelete={() => requireAuth(“admin”, () => deleteEntry(curType, curEntry.id))}
+onAddTrans={() => requireAuth(“any”, () => setModal({ kind: “trans”, type: curType, id: curEntry.id, code: null }))}
+onEditTrans={code => {
+const l = LANGS.find(lx => lx.code === code);
+requireAuth(l?.name, () => setModal({ kind: “trans”, type: curType, id: curEntry.id, code }));
+}}
+/>
 
-    function navigate(type) {
-        curType = type;
-        document.getElementById('home').classList.remove('active');
-        document.getElementById('inner-container').classList.add('active');
-        const titles = {verdicts:'Verdicts أحكام', audio:'Lecture Bits مقتطفات', text:'Text Benefits فوائد', languages:'Browse by Language'};
-        document.getElementById('inner-title').textContent = titles[type] || type;
-        if(type === 'languages') renderLangList(); else renderList(type);
-    }
+```
+{modal?.kind === "entry" && (
+<Modal title="Edit Entry" onClose={() => setModal(null)}>
+<EntryForm type={modal.type} existing={curEntry}
+onSave={data => editEntry(modal.type, modal.id, data)} />
+</Modal>
+)}
+{modal?.kind === "trans" && (
+<Modal title={modal.code ? "Edit Translation" : "Add Translation"} onClose={() => setModal(null)}>
+<TransForm fixedCode={modal.code} existing={modal.code ? curEntry.translations?.[modal.code]?.text : ""}
+onSave={(code, text) => saveTrans(modal.type, modal.id, code, text)} />
+</Modal>
+)}
+{authPending && <AuthModal onSuccess={handleAuthSuccess} onCancel={() => setAuthPending(null)} />}
+</div>
+);
+```
 
-    function goHome() {
-        document.getElementById('inner-container').classList.remove('active');
-        document.getElementById('home').classList.add('active');
-        updateCounts();
-    }
+}
 
-    function renderList(type) {
-        const items = load()[type] || [];
-        const listEl = document.getElementById('list-view');
-        document.getElementById('single-view').style.display = 'none';
-        listEl.style.display = 'block';
+// LANGUAGE LIST
+if (view === “langList”) {
+const usedCodes = new Set();
+[“verdicts”, “audio”, “text”].forEach(type => (db[type] || []).forEach(it => Object.keys(it.translations || {}).forEach(c => usedCodes.add(c))));
+return (
+<div style={{ …s.body, maxWidth: 900, margin: “0 auto”, padding: “2rem 1.5rem 5rem” }}>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet" />
+<BackBtn label=“← Home” onClick={() => setView(“home”)} />
+<h2 style={{ fontFamily: “‘Amiri’, serif”, fontSize: “1.8rem”, color: C.green, marginBottom: “1.5rem” }}>Browse by Language 🌍</h2>
+{LANGS.map(l => (
+<div key={l.code} style={{ …s.entryLink, opacity: usedCodes.has(l.code) ? 1 : 0.5 }}
+onClick={() => { setCurLang(l.code); setView(“langView”); }}>
+<span style={{ fontFamily: l.rtl ? “‘Noto Naskh Arabic’, serif” : “inherit” }}>{l.native}</span>
+<span style={{ marginLeft: “.6rem”, fontSize: “.85rem”, color: C.greenMid }}>{l.name}</span>
+{!usedCodes.has(l.code) && <span style={{ float: “right”, fontSize: “.75rem”, color: C.gold }}>no content yet</span>}
+</div>
+))}
+{authPending && <AuthModal onSuccess={handleAuthSuccess} onCancel={() => setAuthPending(null)} />}
+</div>
+);
+}
 
-        let html = `<button class="save-btn" style="margin-bottom:1.5rem" onclick="requireAuth('admin', () => openEntryModal('${type}'))">+ Add New Entry</button>`;
-        if(items.length === 0) html += "<div class='entry-link'>No entries found yet.</div>";
-        else {
-            items.forEach(it => {
-                html += `<div class="entry-link" onclick="viewEntry('${type}','${it.id}')">${it.title}</div>`;
-            });
-        }
-        listEl.innerHTML = html;
-    }
+// LANGUAGE VIEW — Arabic + single language only
+if (view === “langView” && curLangMeta) {
+const results = [];
+[“verdicts”, “audio”, “text”].forEach(type => {
+(db[type] || []).forEach(it => {
+if (it.translations?.[curLang]) results.push({ …it, _type: type });
+});
+});
+const typeLabel = { verdicts: “Verdict”, audio: “Lecture Bit”, text: “Text Benefit” };
 
-    function renderLangList() {
-        const listEl = document.getElementById('list-view');
-        document.getElementById('single-view').style.display = 'none';
-        listEl.style.display = 'block';
-        let html = "<p style='margin-bottom:1rem; font-style:italic;'>Select a language to see available translations:</p>";
-        LANGS.forEach(l => {
-            html += `<div class="entry-link" onclick="viewByLanguage('${l.code}')">${l.native} <span style="font-size:0.8rem; color:var(--green-mid); margin-left:10px;">${l.name}</span></div>`;
-        });
-        listEl.innerHTML = html;
-    }
+```
+return (
+<div style={{ ...s.body, maxWidth: 900, margin: "0 auto", padding: "2rem 1.5rem 5rem" }}>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet" />
+<BackBtn label="← Languages" onClick={() => setView("langList")} />
+<h2 style={{ fontFamily: curLangMeta.rtl ? "'Noto Naskh Arabic', serif" : "'Amiri', serif", fontSize: "1.8rem", color: C.green, marginBottom: "1.5rem", direction: curLangMeta.rtl ? "rtl" : "ltr" }}>
+{curLangMeta.native} · {curLangMeta.name}
+</h2>
 
-    function viewByLanguage(langCode) {
-        const d = load();
-        const l = LANGS.find(x => x.code === langCode);
-        document.getElementById('inner-title').textContent = l.name + " · " + l.native;
-        const listEl = document.getElementById('list-view');
-        
-        let results = [];
-        ['verdicts', 'audio', 'text'].forEach(type => {
-            d[type].forEach(item => {
-                if(item.langCode === langCode) results.push({...item, type});
-            });
-        });
+{results.length === 0
+? <div style={{ textAlign: "center", padding: "3rem", color: C.greenMid, fontStyle: "italic" }}>No content in {curLangMeta.name} yet.</div>
+: results.map(it => (
+<div key={it.id} style={{ ...s.card }}>
+<span style={{ display: "inline-block", fontSize: ".72rem", textTransform: "uppercase", letterSpacing: ".08em", padding: ".2rem .6rem", borderRadius: 10, marginBottom: ".8rem", background: "rgba(27,58,46,.1)", color: C.greenMid }}>{typeLabel[it._type]}</span>
+<span style={s.sourceHighlight}>— {it.scholar || "Source Unspecified"}</span>
+{it.arabic && <div style={s.arabicText}>{it.arabic}</div>}
+<div style={{ fontSize: "1.1rem", lineHeight: 1.8, ...(curLangMeta.rtl ? { direction: "rtl", textAlign: "right", fontFamily: "'Noto Naskh Arabic', serif", fontSize: "1.2rem" } : {}) }}>
+{it.translations[curLang].text}
+</div>
+<div style={{ marginTop: "1rem", display: "flex", gap: ".6rem", flexWrap: "wrap" }}>
+<button style={{ ...s.btn("outline"), fontSize: ".85rem" }}
+onClick={() => requireAuth(curLangMeta.name, () => setModal({ kind: "trans", type: it._type, id: it.id, code: curLang }))}>
+Edit translation
+</button>
+<button style={{ ...s.btn("outline"), fontSize: ".85rem" }}
+onClick={() => { setCurType(it._type); setCurEntryId(it.id); setView("entry"); }}>
+View full entry
+</button>
+</div>
+</div>
+))
+}
 
-        if(results.length === 0) {
-            listEl.innerHTML = `<p>No entries found for ${l.name}.</p><button class="btn-browse" onclick="navigate('languages')" style="margin-top:1rem;">Back to Languages</button>`;
-            return;
-        }
+{modal?.kind === "trans" && (
+<Modal title="Edit Translation" onClose={() => setModal(null)}>
+<TransForm fixedCode={modal.code}
+existing={(db[modal.type] || []).find(i => i.id === modal.id)?.translations?.[modal.code]?.text || ""}
+onSave={(code, text) => saveTrans(modal.type, modal.id, code, text)} />
+</Modal>
+)}
+{authPending && <AuthModal onSuccess={handleAuthSuccess} onCancel={() => setAuthPending(null)} />}
+</div>
+);
+```
 
-        listEl.innerHTML = results.map(it => `
-            <div class="entry-link" onclick="viewEntry('${it.type}','${it.id}')">
-                <span style="font-size:0.7rem; text-transform:uppercase; color:var(--gold); display:block;">${it.type}</span>
-                ${it.title}
-            </div>
-        `).join('') + `<button class="btn-browse" onclick="navigate('languages')" style="margin-top:1rem;">Back to Languages</button>`;
-    }
+}
 
-    function viewEntry(type, id) {
-        const it = load()[type].find(i => i.id === id);
-        const view = document.getElementById('single-view');
-        document.getElementById('list-view').style.display = 'none';
-        view.style.display = 'block';
-        
-        view.innerHTML = `
-            <div class="benefit-card">
-                <span class="source-highlight">— ${it.scholar || 'Source Unspecified'}</span>
-                <div class="arabic-text">${it.arabic || ''}</div>
-                <div style="background:rgba(184,134,11,0.05); padding:1.5rem; border-left:3px solid var(--gold-lt); font-size:1.1rem; line-height:1.6;">${it.english || 'No translation provided.'}</div>
-                <div style="margin-top:2rem; display:flex; gap:10px;">
-                    <button class="edit-btn" style="border:1px solid var(--rust); color:var(--rust);" onclick="requireAuth('admin', () => delItem('${type}','${id}'))">Delete</button>
-                    <button class="btn-browse" onclick="renderList('${type}')">Back to List</button>
-                </div>
-            </div>
-        `;
-    }
-
-    function openEntryModal(type) {
-        const label = type === 'audio' ? 'Lecture Bit' : type === 'verdicts' ? 'Verdict' : 'Benefit';
-        document.getElementById('modal-title').textContent = "Add " + label;
-        document.getElementById('modal-body').innerHTML = `
-            <div class="field"><label>Title (Internal Reference)</label><input type="text" id="f-title"></div>
-            <div class="field"><label>Scholar / Source</label><input type="text" id="f-scholar"></div>
-            <div class="field"><label>Language</label>
-                <select id="f-lang">
-                    ${LANGS.map(l => `<option value="${l.code}">${l.name}</option>`).join('')}
-                </select>
-            </div>
-            <div class="field"><label>Arabic Text</label><textarea id="f-arabic" rows="4" dir="rtl"></textarea></div>
-            <div class="field"><label>English Translation</label><textarea id="f-english" rows="4"></textarea></div>
-            <button class="save-btn" style="width:100%; margin-bottom:10px;" onclick="saveEntry('${type}')">Save Entry</button>
-        `;
-        document.getElementById('modal-overlay').classList.add('open');
-    }
-
-    function saveEntry(type) {
-        const d = load();
-        const newItem = {
-            id: Date.now().toString(),
-            title: document.getElementById('f-title').value || 'Untitled',
-            scholar: document.getElementById('f-scholar').value,
-            langCode: document.getElementById('f-lang').value,
-            arabic: document.getElementById('f-arabic').value,
-            english: document.getElementById('f-english').value
-        };
-        d[type].unshift(newItem);
-        save(d);
-        closeModal();
-        renderList(type);
-    }
-
-    function delItem(type, id) {
-        if(!confirm("Are you sure you want to delete this entry?")) return;
-        const d = load();
-        d[type] = d[type].filter(i => i.id !== id);
-        save(d);
-        renderList(type);
-    }
-
-    function requireAuth(role, action) {
-        if (currentUser === ADMIN_USER) action();
-        else {
-            pendingAction = action;
-            document.getElementById('auth-overlay').classList.add('open');
-        }
-    }
-
-    function doLogin() {
-        const u = document.getElementById('auth-user').value;
-        const p = document.getElementById('auth-pass').value;
-        if (u === ADMIN_USER && p === ADMIN_PASS) {
-            currentUser = u;
-            document.getElementById('auth-overlay').classList.remove('open');
-            if(pendingAction) pendingAction();
-        } else { alert("Incorrect credentials."); }
-    }
-
-    function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
-    function cancelAuth() { document.getElementById('auth-overlay').classList.remove('open'); }
-    
-    function updateCounts() {
-        const d = load();
-        document.getElementById('cnt-verdicts').textContent = d.verdicts.length;
-        document.getElementById('cnt-audio').textContent = d.audio.length;
-        document.getElementById('cnt-text').textContent = d.text.length;
-    }
-
-    updateCounts();
-</script>
-</body>
-</html>
+return null;
+}
