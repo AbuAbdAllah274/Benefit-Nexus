@@ -1,398 +1,144 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فوائد · Benefits</title>
-    <style>
-        :root {
-            --ink: #1a1209; --parchment: #f5eed8; --cream: #faf6ec;
-            --gold: #b8860b; --gold-lt: #d4a843; --green: #1b3a2e;
-            --green-mid: #2d5c47; --rust: #8b3a1a; --border: rgba(184,134,11,.25);
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: Georgia, serif; background: var(--cream); color: var(--ink); min-height: 100vh; padding: 20px; line-height: 1.5; }
-        .container { max-width: 900px; margin: 0 auto; position: relative; }
-        
-        /* Top Navigation Bar */
-        .top-nav { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-        .user-status { font-size: 0.8rem; margin-right: auto; align-self: center; color: var(--green-mid); font-weight: bold; text-transform: uppercase; }
-
-        .page { display: none; }
-        .page.active { display: block; }
-        
-        h1 { font-size: 3.5rem; color: var(--green); text-align: center; margin-bottom: 0.5rem; }
-        h1 span { color: var(--gold); display: block; font-size: 0.6em; margin-top: 5px; }
-        .divider { width: 120px; height: 2px; background: var(--gold); margin: 25px auto; opacity: 0.4; }
-
-        /* Dashboard Cards */
-        .card { background: var(--parchment); border: 1px solid var(--border); padding: 25px; border-radius: 8px; margin-bottom: 20px; cursor: pointer; transition: 0.2s; }
-        .card:hover { border-color: var(--gold); transform: translateY(-2px); }
-
-        /* List Items */
-        .entry-link { background: var(--parchment); padding: 18px; border: 1px solid var(--border); border-radius: 5px; margin-bottom: 12px; cursor: pointer; color: var(--green); font-weight: bold; display: block; }
-
-        /* Buttons */
-        .btn { padding: 10px 20px; cursor: pointer; border-radius: 4px; font-family: inherit; transition: 0.2s; font-size: 0.9rem; font-weight: bold; border: none; }
-        .btn-solid { background: var(--green); color: white; }
-        .btn-outline { background: none; border: 1px solid var(--green); color: var(--green); }
-        .btn-danger { background: none; border: 1px solid var(--rust); color: var(--rust); }
-
-        /* Modals */
-        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
-        .overlay.active { display: flex; }
-        .modal { background: var(--cream); padding: 30px; border-radius: 8px; width: 100%; max-width: 550px; max-height: 90vh; overflow-y: auto; }
-
-        /* Inputs */
-        input, textarea, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid var(--border); border-radius: 4px; font-family: inherit; }
-        label { font-size: 0.75rem; text-transform: uppercase; color: var(--green-mid); font-weight: bold; }
-
-        /* Content Display */
-        .arabic { font-size: 1.8rem; direction: rtl; text-align: right; line-height: 2.2; margin: 20px 0; padding: 15px; background: white; border-radius: 4px; border-right: 5px solid var(--gold); }
-        .translation-display { font-size: 1.2rem; padding: 20px; background: rgba(184,134,11,0.05); border-left: 5px solid var(--gold-lt); }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Benefits · فوائد</title>
+<script src="https://js.puter.com/v2/"></script>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root { --ink:#1a1209; --parchment:#f5eed8; --gold:#b8860b; --green:#1b3a2e; }
+body { font-family: serif; background: #faf6ec; color: var(--ink); margin: 0; }
+.page { display: none; padding: 20px; }
+.active { display: block; }
+.arabic-source { font-family: 'Noto Naskh Arabic', serif; font-size: 1.4rem; direction: rtl; text-align: right; border-bottom: 2px solid var(--gold); padding: 15px; margin-bottom: 15px; }
+.english-box { background: var(--parchment); padding: 15px; border-radius: 5px; margin-bottom: 15px; border-left: 4px solid var(--green); }
+.entry-link { display: block; background: white; padding: 15px; margin: 10px 0; border: 1px solid var(--gold); text-decoration: none; color: var(--green); border-radius: 4px; }
+#auth-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; align-items: center; justify-content: center; }
+#auth-overlay.open { display: flex; }
+.auth-box { background: white; padding: 25px; border-radius: 8px; width: 300px; text-align: center; }
+</style>
 </head>
 <body>
 
-<div class="container">
-    <div class="top-nav">
-        <div id="user-display" class="user-status">Guest Mode</div>
-        <button class="btn btn-outline" id="btn-admin-login" onclick="openAuthModal('admin')">Admin Login</button>
-        <button class="btn btn-outline" id="btn-contributor-login" onclick="openAuthModal('contributor')">Contributor Login</button>
-        <button class="btn btn-danger" id="btn-logout" style="display:none;" onclick="logout()">Logout</button>
-    </div>
-
-    <!-- PAGE: HOME -->
-    <div id="page-home" class="page active">
-        <h1>Benefits <span>فوائد</span></h1>
-        <div class="divider"></div>
-        <div class="card" onclick="showCategory('verdicts')"><h3>Verdicts</h3><p>Browse Islamic legal verdicts.</p></div>
-        <div class="card" onclick="showCategory('audio')"><h3>Lecture Bits</h3><p>Extracts from audio lectures.</p></div>
-        <div class="card" onclick="showCategory('text')"><h3>Text Benefits</h3><p>Benefits from written articles.</p></div>
-        <div class="card" onclick="showLanguagePortal()" style="border: 2px solid var(--gold)"><h3>Browse by Language</h3><p>View specific language translations.</p></div>
-    </div>
-
-    <!-- PAGE: CATEGORY LIST -->
-    <div id="page-list" class="page">
-        <button class="btn btn-outline" onclick="goHome()">← Home</button>
-        <h2 id="list-title" style="margin: 20px 0; color: var(--green);"></h2>
-        <div id="admin-actions" style="display:none; margin-bottom: 20px;">
-            <button class="btn btn-solid" onclick="openEntryModal(false)">+ Add New Main Entry</button>
-        </div>
-        <div id="list-content"></div>
-    </div>
-
-    <!-- PAGE: LANGUAGE PORTAL -->
-    <div id="page-lang-menu" class="page">
-        <button class="btn btn-outline" onclick="goHome()">← Home</button>
-        <h2 style="margin: 20px 0;">Select Language</h2>
-        <div id="lang-menu-content"></div>
-    </div>
-
-    <!-- PAGE: LANGUAGE SPECIFIC LIST -->
-    <div id="page-lang-list" class="page">
-        <button class="btn btn-outline" onclick="showLanguagePortal()">← Back to Languages</button>
-        <h2 id="lang-list-title" style="margin: 20px 0; color: var(--gold);"></h2>
-        <div id="lang-list-content"></div>
-    </div>
-
-    <!-- PAGE: ENTRY VIEW -->
-    <div id="page-view" class="page">
-        <button class="btn btn-outline" id="view-back-btn" onclick="handleBackFromView()">← Back</button>
-        <div id="view-content" style="margin-top:25px;"></div>
-    </div>
+<div id="auth-overlay">
+<div class="auth-box">
+<h3>Restricted Access</h3>
+<input type="text" id="auth-user" placeholder="Username" style="width:90%; padding:8px; margin-bottom:10px;">
+<input type="password" id="auth-pass" placeholder="Password" style="width:90%; padding:8px; margin-bottom:10px;">
+<button onclick="login()" style="width:100%; padding:10px; background:var(--green); color:white; border:none;">Login</button>
+<p onclick="document.getElementById('auth-overlay').classList.remove('open')" style="cursor:pointer; color:grey; margin-top:10px;">Cancel</p>
+</div>
 </div>
 
-<!-- MODAL: AUTH -->
-<div id="modal-auth" class="overlay">
-    <div class="modal">
-        <h3 id="auth-modal-title">Login</h3>
-        <input type="text" id="auth-user" placeholder="Username">
-        <input type="password" id="auth-pass" placeholder="Password">
-        <p id="auth-error" style="color:var(--rust); font-size: 0.8rem; display:none; margin-bottom:10px;">Incorrect credentials.</p>
-        <button class="btn btn-solid" style="width:100%" onclick="processLogin()">Login</button>
-        <button class="btn btn-outline" style="width:100%; margin-top:10px;" onclick="closeModals()">Cancel</button>
-    </div>
+<div id="home" class="page active">
+<h1 style="text-align:center;">Benefits <span style="color:var(--gold)">فوائد</span></h1>
+<div style="display:flex; flex-direction:column; gap:10px;">
+<button onclick="navigate('verdicts')" style="padding:15px;">Verdicts ⚖️</button>
+<button onclick="navigate('audio')" style="padding:15px;">Lecture Bits مقتطفات دروس 📹</button>
+<button onclick="navigate('languages')" style="padding:15px; border:2px solid var(--gold);">Browse by Language 🌍</button>
+</div>
 </div>
 
-<!-- MODAL: MAIN ENTRY (ADMIN ONLY) -->
-<div id="modal-entry" class="overlay">
-    <div class="modal">
-        <h3 id="entry-modal-title">Entry Details</h3>
-        <label>Title (English Reference)</label><input type="text" id="f-title">
-        <label>Scholar / Source</label><input type="text" id="f-scholar">
-        <label>Arabic Source Text</label><textarea id="f-arabic" rows="5" dir="rtl"></textarea>
-        <label>English Base Translation</label><textarea id="f-english" rows="3"></textarea>
-        <button class="btn btn-solid" style="width:100%" onclick="saveEntry()">Save Main Entry</button>
-        <button class="btn btn-outline" style="width:100%; margin-top:10px;" onclick="closeModals()">Cancel</button>
-    </div>
-</div>
-
-<!-- MODAL: TRANSLATION (ADMIN OR CONTRIBUTOR) -->
-<div id="modal-trans" class="overlay">
-    <div class="modal">
-        <h3 id="trans-modal-title">Translation Submission</h3>
-        <div id="admin-lang-select" style="display:none;">
-            <label>Select Language</label>
-            <select id="f-trans-lang"></select>
-        </div>
-        <p id="contributor-lang-display" style="font-weight:bold; color:var(--gold); margin-bottom:10px;"></p>
-        <label>Concise Title (Target Language)</label><input type="text" id="f-trans-title">
-        <label>Translation Text</label><textarea id="f-trans-text" rows="8"></textarea>
-        <button class="btn btn-solid" style="width:100%" onclick="saveTranslation()">Save Translation</button>
-        <button class="btn btn-outline" style="width:100%; margin-top:10px;" onclick="closeModals()">Cancel</button>
-    </div>
+<div id="inner-container" class="page">
+<button onclick="goHome()">← Back to Landing Page</button>
+<h2 id="inner-title"></h2>
+<div id="list-view"></div>
+<div id="single-view" style="display:none"></div>
 </div>
 
 <script>
-    // Database Storage
-    let db = JSON.parse(localStorage.getItem('benefits_final_v1')) || { verdicts: [], audio: [], text: [] };
-    
-    const LANGUAGES = [
-        "Urdu", "Bengali", "Swahili", "Tigrinya", "Amharic", "Somali", "French", "Indonesian", 
-        "Malay", "Turkish", "Spanish", "Albanian", "Bosnian", "Hausa", "Yoruba", "Pashto"
-    ];
+const ADMIN_PASS = "Nael2026";
+let currentUser = null, pendingAction = null;
 
-    let session = {
-        user: null, // 'admin' or Language Name
-        role: 'guest',
-        currentCategory: null,
-        currentEntryId: null,
-        activeLangFilter: null,
-        authContext: null
-    };
+// THE SHARED PATH: Puter Cloud Key-Value Store
+async function getCloudData() {
+const data = await puter.kv.get('nael_benefits_v1');
+return data ? JSON.parse(data) : { verdicts: [], audio: [], text: [] };
+}
 
-    function saveDB() { localStorage.setItem('benefits_final_v1', JSON.stringify(db)); }
+async function setCloudData(d) {
+await puter.kv.set('nael_benefits_v1', JSON.stringify(d));
+}
 
-    // Navigation Logic
-    function showPage(id) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        window.scrollTo(0,0);
-    }
+function login() {
+const user = document.getElementById('auth-user').value.trim();
+const pass = document.getElementById('auth-pass').value.trim();
+if ((user === 'admin' && pass === ADMIN_PASS) || (pass === user + "1447")) {
+currentUser = user;
+document.getElementById('auth-overlay').classList.remove('open');
+if (pendingAction) { pendingAction(); pendingAction = null; }
+} else { alert("Unauthorized."); }
+}
 
-    function goHome() { session.activeLangFilter = null; showPage('page-home'); }
+function checkAuth(role, action) {
+if (currentUser === 'admin' || (role && currentUser === role)) action();
+else { pendingAction = action; document.getElementById('auth-overlay').classList.add('open'); }
+}
 
-    function showCategory(cat) {
-        session.currentCategory = cat;
-        session.activeLangFilter = null;
-        document.getElementById('list-title').innerText = cat.toUpperCase();
-        document.getElementById('admin-actions').style.display = (session.role === 'admin') ? 'block' : 'none';
-        renderList();
-        showPage('page-list');
-    }
+async function navigate(type) {
+document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+document.getElementById('inner-container').classList.add('active');
+document.getElementById('inner-title').textContent = type;
+type === 'languages' ? renderLangs() : renderList(type);
+}
 
-    function renderList() {
-        const container = document.getElementById('list-content');
-        container.innerHTML = '';
-        db[session.currentCategory].forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'entry-link';
-            div.innerText = item.title;
-            div.onclick = () => viewEntry(item.id);
-            container.appendChild(div);
-        });
-    }
+function goHome() {
+document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+document.getElementById('home').classList.add('active');
+}
 
-    function showLanguagePortal() {
-        const container = document.getElementById('lang-menu-content');
-        container.innerHTML = '';
-        LANGUAGES.sort().forEach(lang => {
-            const div = document.createElement('div');
-            div.className = 'entry-link';
-            div.innerText = lang;
-            div.onclick = () => showLanguageList(lang);
-            container.appendChild(div);
-        });
-        showPage('page-lang-menu');
-    }
+async function renderList(type) {
+const d = await getCloudData();
+const list = document.getElementById('list-view');
+list.innerHTML = `<button onclick="checkAuth('admin', () => addEntry('${type}'))">+ Add New Entry</button>`;
+d[type].forEach(it => {
+list.innerHTML += `<a href="#" class="entry-link" onclick="viewItem('${type}','${it.id}')">${it.title}</a>`;
+});
+}
 
-    function showLanguageList(lang) {
-        session.activeLangFilter = lang;
-        document.getElementById('lang-list-title').innerText = lang + " Portal";
-        const container = document.getElementById('lang-list-content');
-        container.innerHTML = '';
-        let foundCount = 0;
-        ['verdicts', 'audio', 'text'].forEach(cat => {
-            db[cat].forEach(e => {
-                if(e.translations && e.translations[lang]) {
-                    foundCount++;
-                    const div = document.createElement('div');
-                    div.className = 'entry-link';
-                    div.innerText = e.translations[lang].title || e.title;
-                    div.onclick = () => viewEntry(e.id, cat);
-                    container.appendChild(div);
-                }
-            });
-        });
-        if(foundCount === 0) container.innerHTML = "<p style='text-align:center; opacity:0.5;'>No entries yet.</p>";
-        showPage('page-lang-list');
-    }
+async function viewItem(type, id) {
+const d = await getCloudData();
+const it = d[type].find(i => i.id === id);
+const view = document.getElementById('single-view');
+document.getElementById('list-view').style.display = 'none';
+view.style.display = 'block';
 
-    function viewEntry(id, catOverride = null) {
-        if(catOverride) session.currentCategory = catOverride;
-        session.currentEntryId = id;
-        const entry = db[session.currentCategory].find(e => e.id === id);
-        const container = document.getElementById('view-content');
-        let html = "";
+view.innerHTML = `
+<div class="arabic-source">${it.arabic}</div>
+<div class="english-box"><strong>English:</strong><br>${it.english}</div>
+<button onclick="checkAuth(null, () => addTrans('${type}','${it.id}'))">+ Add Translation</button>
+<div id="translations-list"></div>
+`;
 
-        if(session.activeLangFilter) {
-            const tr = entry.translations[session.activeLangFilter];
-            html = `
-                <div style="margin-bottom:10px; font-weight:bold; color:var(--green-mid)">Scholar: ${entry.scholar}</div>
-                <div class="arabic">${entry.arabic}</div>
-                <div style="font-weight:bold; color:var(--gold); margin-top:20px;">${session.activeLangFilter} Translation:</div>
-                <div class="translation-display">${tr.text}</div>
-                ${(session.role === 'admin') ? `<button class="btn btn-outline" style="margin-top:20px" onclick="openTransModal('${session.activeLangFilter}')">Override Translation</button>` : ''}
-            `;
-        } else {
-            let trHtml = "";
-            for(let l in entry.translations) {
-                trHtml += `
-                    <div class="card" style="cursor:default; margin-top:15px;">
-                        <b style="color:var(--gold)">${l}:</b> ${entry.translations[l].title}
-                        <p style="margin-top:10px;">${entry.translations[l].text}</p>
-                        ${(session.role === 'admin' || session.user === l) ? `<button class="btn btn-outline" style="margin-top:10px" onclick="openTransModal('${l}')">Edit</button>` : ''}
-                    </div>
-                `;
-            }
-            html = `
-                <div class="card" style="cursor:default">
-                    <h2 style="color:var(--green)">${entry.title}</h2>
-                    <p><b>Scholar:</b> ${entry.scholar}</p>
-                    <div class="arabic">${entry.arabic}</div>
-                    <div class="translation-display"><small>ENGLISH BASE:</small><br>${entry.english}</div>
-                    <div style="margin-top:20px;">
-                        <button class="btn btn-solid" onclick="openTransModal()">+ Add Translation</button>
-                        ${(session.role === 'admin') ? `
-                            <button class="btn btn-outline" onclick="openEntryModal(true)">Edit Main</button>
-                            <button class="btn btn-danger" onclick="deleteEntry()">Delete Entry</button>
-                        ` : ''}
-                    </div>
-                </div>
-                <h3>Translations</h3>${trHtml || '<p style="opacity:0.5">None yet.</p>'}
-            `;
-        }
-        container.innerHTML = html;
-        showPage('page-view');
-    }
+for(let lang in it.translations) {
+view.innerHTML += `<div class="entry-link"><strong>${lang} (by ${it.translations[lang].name}):</strong><br>${it.translations[lang].text}</div>`;
+}
+}
 
-    function handleBackFromView() {
-        if(session.activeLangFilter) showLanguageList(session.activeLangFilter);
-        else showCategory(session.currentCategory);
-    }
+async function addEntry(type) {
+const title = prompt("Title (Internal Ref):");
+const arabic = prompt("Source Text (Arabic):");
+const english = prompt("Admin English Translation:");
+if(title && arabic) {
+const d = await getCloudData();
+d[type].push({ id: Date.now().toString(), title, arabic, english, translations: {} });
+await setCloudData(d);
+navigate(type);
+}
+}
 
-    // Auth Logic
-    function openAuthModal(context) {
-        session.authContext = context;
-        document.getElementById('auth-error').style.display = 'none';
-        document.getElementById('auth-modal-title').innerText = (context === 'admin') ? "Admin Access" : "Contributor Access";
-        document.getElementById('modal-auth').classList.add('active');
-    }
-
-    function processLogin() {
-        const u = document.getElementById('auth-user').value.trim();
-        const p = document.getElementById('auth-pass').value.trim();
-        if(session.authContext === 'admin') {
-            if(u.toLowerCase() === 'admin' && p === 'Nael2026') { setSession('admin', 'admin'); closeModals(); }
-            else { document.getElementById('auth-error').style.display = 'block'; }
-        } else {
-            const valid = LANGUAGES.find(l => l.toLowerCase() === u.toLowerCase());
-            if(valid && p === (valid + "1447")) { setSession(valid, 'contributor'); closeModals(); }
-            else { document.getElementById('auth-error').style.display = 'block'; }
-        }
-    }
-
-    function setSession(user, role) {
-        session.user = user; session.role = role;
-        document.getElementById('user-display').innerText = (role === 'admin') ? "ADMIN OVERRIDE ACTIVE" : "LOGGED IN: " + user;
-        document.getElementById('btn-admin-login').style.display = 'none';
-        document.getElementById('btn-contributor-login').style.display = 'none';
-        document.getElementById('btn-logout').style.display = 'block';
-        if(session.currentCategory) renderList();
-    }
-
-    function logout() {
-        session.user = null; session.role = 'guest';
-        document.getElementById('user-display').innerText = "Guest Mode";
-        document.getElementById('btn-admin-login').style.display = 'block';
-        document.getElementById('btn-contributor-login').style.display = 'block';
-        document.getElementById('btn-logout').style.display = 'none';
-        goHome();
-    }
-
-    // Entry Management
-    function openEntryModal(isEdit) {
-        document.getElementById('entry-modal-title').innerText = isEdit ? "Edit Main Entry" : "Add Main Entry";
-        const entry = isEdit ? db[session.currentCategory].find(e => e.id === session.currentEntryId) : {title:'', scholar:'', arabic:'', english:''};
-        document.getElementById('f-title').value = entry.title;
-        document.getElementById('f-scholar').value = entry.scholar;
-        document.getElementById('f-arabic').value = entry.arabic;
-        document.getElementById('f-english').value = entry.english;
-        document.getElementById('modal-entry').classList.add('active');
-    }
-
-    function saveEntry() {
-        const data = {
-            id: session.currentEntryId || Date.now().toString(),
-            title: document.getElementById('f-title').value,
-            scholar: document.getElementById('f-scholar').value,
-            arabic: document.getElementById('f-arabic').value,
-            english: document.getElementById('f-english').value,
-            translations: (session.currentEntryId) ? db[session.currentCategory].find(e => e.id === session.currentEntryId).translations : {}
-        };
-        if(session.currentEntryId) {
-            const idx = db[session.currentCategory].findIndex(e => e.id === session.currentEntryId);
-            db[session.currentCategory][idx] = data;
-        } else { db[session.currentCategory].unshift(data); }
-        saveDB(); closeModals(); renderList(); viewEntry(data.id);
-    }
-
-    function deleteEntry() {
-        if(!confirm("DELETE ENTIRE ENTRY?")) return;
-        db[session.currentCategory] = db[session.currentCategory].filter(e => e.id !== session.currentEntryId);
-        saveDB(); showCategory(session.currentCategory);
-    }
-
-    // Translation Management
-    function openTransModal(targetLang = null) {
-        if(session.role === 'guest') return openAuthModal('contributor');
-        
-        const lang = targetLang || session.user;
-        if(session.role !== 'admin' && lang !== session.user) return alert("You can only edit your own language.");
-
-        const entry = db[session.currentCategory].find(e => e.id === session.currentEntryId);
-        
-        if(session.role === 'admin') {
-            const sel = document.getElementById('f-trans-lang');
-            sel.innerHTML = LANGUAGES.map(l => `<option value="${l}" ${l===lang?'selected':''}>${l}</option>`).join('');
-            document.getElementById('admin-lang-select').style.display = 'block';
-            document.getElementById('contributor-lang-display').style.display = 'none';
-        } else {
-            document.getElementById('contributor-lang-display').innerText = "Language: " + session.user;
-            document.getElementById('admin-lang-select').style.display = 'none';
-            document.getElementById('contributor-lang-display').style.display = 'block';
-        }
-
-        const tr = (entry.translations && entry.translations[lang]) ? entry.translations[lang] : {title:'', text:''};
-        document.getElementById('f-trans-title').value = tr.title;
-        document.getElementById('f-trans-text').value = tr.text;
-        document.getElementById('modal-trans').classList.add('active');
-    }
-
-    function saveTranslation() {
-        const lang = (session.role === 'admin') ? document.getElementById('f-trans-lang').value : session.user;
-        const entry = db[session.currentCategory].find(e => e.id === session.currentEntryId);
-        if(!entry.translations) entry.translations = {};
-        entry.translations[lang] = { 
-            title: document.getElementById('f-trans-title').value, 
-            text: document.getElementById('f-trans-text').value 
-        };
-        saveDB(); closeModals(); viewEntry(session.currentEntryId);
-    }
-
-    function closeModals() { document.querySelectorAll('.overlay').forEach(o => o.classList.remove('active')); }
+async function addTrans(type, id) {
+const name = prompt("Contributor Name:");
+const text = prompt("Translation Text (First line is the title):");
+if(name && text) {
+const d = await getCloudData();
+const it = d[type].find(i => i.id === id);
+it.translations[currentUser] = { name, text };
+await setCloudData(d);
+viewItem(type, id);
+}
+}
 </script>
-
 </body>
 </html>
